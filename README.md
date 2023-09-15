@@ -50,4 +50,4 @@ Use it only against your own networks and devices!
 1. Upload this script to your ESP8266 device.
 2. Connect to the ESP8266's Wi-Fi network (default SSID is "Portal").
 3. Open a web browser, and type in "192.168.1.1/dashboard" to get to the dashboard or "192.168.1.1" for the page that a normal user would see.
-4. There you can view the captured passwords and edit the SSID and Language settings.
+4. There you can view the captured passwords and edit the SSID and other settings.
