@@ -3,7 +3,8 @@
 #  Documentation
 
 ## Introduction
-This Captive Portal Proviedes Multiple Languages and a Dashboard to view and change all settings in one place. This project is a proof of concept for testing and educational purposes. Use it only against your own networks and devices!
+This Captive Portal Proviedes Multiple Languages and a Dashboard to view and change all settings in one place. This project is a proof of concept for testing and educational purposes. 
+Use it only against your own networks and devices!
 
 ## Libraries Used
 1. `ESP8266WiFi.h`: Provides functions for connecting to Wi-Fi networks.
