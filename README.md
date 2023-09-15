@@ -12,6 +12,17 @@ Credits: [Spacehuhn](https://github.com/SpacehuhnTech) for inspiration on the De
 3. `ESP8266WebServer.h`: Allows you to create a web server for handling HTTP requests.
 4. `EEPROM.h`: Provides functions for reading and writing data to the ESP8266's EEPROM.
 
+# Screenshots
+
+<h3>192.168.1.1/ Here the User gets informed that there is an "error" and puts in there Password.</h3>
+<img width="1877px" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/index-Screenshot.v1.0.png" title="192.168.1.1/">
+
+<h3>192.168.1.1/restarting THis page is displayed after a Password is submitted</h3>
+<img width="1877px" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/restarting-Screenshot.v1.0.png" title="192.168.1.1/restarting">
+
+<h3>192.168.1.1/dashboard Here you can change the Language, SSID and view your captured Passwords</h3>
+<img width="1877px" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/dashboard-Screenshot.v1.0.png" title="192.168.1.1/dashboard">
+
 ## Constants and Variables
 - `SSID_NAME`: Default SSID name for the captive portal.
 - `DNS_PORT`: Port for the DNS server.
