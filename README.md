@@ -6,12 +6,6 @@ Use it only against your own networks and devices! If you have any questions or 
 
 Credits: [Spacehuhn](https://github.com/SpacehuhnTech) for inspiration on the Design of the dashboard, [adamff-dev](https://github.com/adamff-dev) for the idea and inspiration for parts of the code and [sankethj](https://github.com/sankethj) also for inspiration for parts of the code.
 
-## Libraries Used
-1. `ESP8266WiFi.h`: Provides functions for connecting to Wi-Fi networks.
-2. `DNSServer.h`: Implements a DNS server for DNS spoofing.
-3. `ESP8266WebServer.h`: Allows you to create a web server for handling HTTP requests.
-4. `EEPROM.h`: Provides functions for reading and writing data to the ESP8266's EEPROM.
-
 # Screenshots
 
 <h3>192.168.1.1/ Here the User gets informed that there is an "error" and puts in there Password.</h3>
@@ -22,6 +16,19 @@ Credits: [Spacehuhn](https://github.com/SpacehuhnTech) for inspiration on the De
 
 <h3>192.168.1.1/dashboard Here you can change the Language, SSID and view your captured Passwords</h3>
 <img width="1877px" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/dashboard-Screenshot.v1.0.png" title="192.168.1.1/dashboard">
+
+## Usage
+1. Upload the script or binary file to your ESP8266 device.
+2. Connect to the ESP8266's Wi-Fi network (default SSID is "Portal").
+3. Open a web browser, and type in "192.168.1.1/dashboard" to get to the dashboard
+	 or "192.168.1.1" for the page that a normal user would see.
+4. There you can view the captured passwords and edit the SSID and other settings.
+
+## Libraries Used
+1. `ESP8266WiFi.h`: Provides functions for connecting to Wi-Fi networks.
+2. `DNSServer.h`: Implements a DNS server for DNS spoofing.
+3. `ESP8266WebServer.h`: Allows you to create a web server for handling HTTP requests.
+4. `EEPROM.h`: Provides functions for reading and writing data to the ESP8266's EEPROM.
 
 ## Constants and Variables
 - `SSID_NAME`: Default SSID name for the captive portal.
@@ -58,9 +65,3 @@ Credits: [Spacehuhn](https://github.com/SpacehuhnTech) for inspiration on the De
 - Reads the stored SSID and passwords from EEPROM.
 - Sets up Wi-Fi in SoftAP mode.
 - Initializes DNS server, web server, and routes.
-
-## Usage
-1. Upload this script to your ESP8266 device.
-2. Connect to the ESP8266's Wi-Fi network (default SSID is "Portal").
-3. Open a web browser, and type in "192.168.1.1/dashboard" to get to the dashboard or "192.168.1.1" for the page that a normal user would see.
-4. There you can view the captured passwords and edit the SSID and other settings.
