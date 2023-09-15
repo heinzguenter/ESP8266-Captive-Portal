@@ -1,9 +1,9 @@
 # Captive Portal
  
-# Captive Portal Arduino Script Documentation
+#  Documentation
 
 ## Introduction
-This Arduino script creates a captive portal using an ESP8266 module. A captive portal is a web page that is displayed to users when they connect to a Wi-Fi network. It typically requires users to provide some information or perform an action, such as agreeing to terms and conditions or entering a password, before they can access the internet.
+This Captive Portal Proviedes Multiple Languages and a Dashboard to view and change all settings in one place. This project is a proof of concept for testing and educational purposes. Use it only against your own networks and devices!
 
 ## Libraries Used
 1. `ESP8266WiFi.h`: Provides functions for connecting to Wi-Fi networks.
