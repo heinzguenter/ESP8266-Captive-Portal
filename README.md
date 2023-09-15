@@ -4,7 +4,7 @@
 This Captive Portal Provides Multiple Languages and a Dashboard to view and change all settings in one place. This project is a proof of concept for testing and educational purposes. 
 Use it only against your own networks and devices! If you have any questions or suggestions just create an issue or DM me on Discord under the username heinzguenter.
 
-Currently Supportet languages: English and German
+Currently Supportet languages: English and German.
 
 Credits: [Spacehuhn](https://github.com/SpacehuhnTech) for inspiration on the Design of the dashboard, [adamff-dev](https://github.com/adamff-dev) for the idea and inspiration for parts of the code and [sankethj](https://github.com/sankethj) also for inspiration for parts of the code.
 
