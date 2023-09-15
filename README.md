@@ -1,4 +1,4 @@
-# ESP8266 Captive Portal Documentation
+# ESP8266 Captive Portal
 
 ## Introduction
 This Captive Portal Proviedes Multiple Languages and a Dashboard to view and change all settings in one place. This project is a proof of concept for testing and educational purposes. 
