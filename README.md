@@ -1,6 +1,4 @@
-# Captive Portal
- 
-#  Documentation
+# Captive Portal Documentation
 
 ## Introduction
 This Captive Portal Proviedes Multiple Languages and a Dashboard to view and change all settings in one place. This project is a proof of concept for testing and educational purposes. 
@@ -47,17 +45,9 @@ Use it only against your own networks and devices!
 - Reads the stored SSID and passwords from EEPROM.
 - Sets up Wi-Fi in SoftAP mode.
 - Initializes DNS server, web server, and routes.
-- Enables the built-in LED.
 
 ## Usage
 1. Upload this script to your ESP8266 device.
 2. Connect to the ESP8266's Wi-Fi network (default SSID is "Portal").
-3. Open a web browser, and you should be redirected to the captive portal index page.
-4. Enter the Wi-Fi password in the input field and click "Router neu starten" or "Restart Router."
-5. The ESP8266 will restart, and most problems should be resolved.
-6. Access the dashboard page to view captured passwords and nearby networks.
-
-## Note
-- The ESP8266 stores captured passwords in EEPROM.
-- You can change the default SSID name and customize the web page content by modifying the script.
-- Use this script responsibly and comply with applicable laws and regulations regarding network usage and privacy.
+3. Open a web browser, and type in "192.168.1.1/dashboard" to get to the dashboard or "192.168.1.1" for the page that a normal user would see.
+4. There you can view the captured passwords and edit the SSID and Language settings.
