@@ -160,7 +160,7 @@ void Index(){
 
   if (indexLang == "DE"){_html += "Router-Fehler";}
   if (indexLang == "EN"){_html += "Router-ERROR";}
-  if (indexLang == "DE"){_html += "Error del router";}
+  if (indexLang == "SP"){_html += "Error del router";}
   
   _html += "</title>";
   _html += favicon;
