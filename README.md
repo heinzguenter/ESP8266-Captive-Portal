@@ -23,7 +23,7 @@ Credits: [Spacehuhn](https://github.com/SpacehuhnTech) for inspiration on the De
 <img width="410" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/Serial-Interface-screenshot.v2.0.png" title="SerialLog">
 
 ## Usage
-### Easy
+### Simple
 1. Upload the binary file or to your ESP8266 device. 
 2. Connect to the ESP8266's Wi-Fi network (default SSID is "Portal-Update").
 3. Open a web browser, and type in "192.168.1.1/dashboard" to get to the dashboard
