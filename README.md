@@ -13,7 +13,7 @@ Credits: [Spacehuhn](https://github.com/SpacehuhnTech) for inspiration on the De
 <h3>192.168.1.1/ Here the User gets informed that there is an "error" and puts in there Password.</h3>
 <img width="1278px" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/index-screenshot.v2.0.png" title="192.168.1.1/">
 
-<h3>192.168.1.1/restarting THis page is displayed after a Password is submitted</h3>
+<h3>192.168.1.1/restarting This page is displayed after a Password is submitted</h3>
 <img width="1278px" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/restarting-screenshot.v2.0.png" title="192.168.1.1/restarting">
 
 <h3>192.168.1.1/dashboard Here you can change the Language, SSID and view your captured Passwords</h3>
