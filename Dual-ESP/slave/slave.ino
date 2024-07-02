@@ -96,7 +96,7 @@ void validate(const String &targetSSID, const String &pass){
 void setup() {
   esp.begin(115200);
 
-  WiFi.mode(WIFI_STA);
+  WiFi.mode(WIFI_STA); WiFi.disconnect();
   pinMode(D4, OUTPUT);
   digitalWrite(D4, HIGH);
   pinMode(D3, OUTPUT);
