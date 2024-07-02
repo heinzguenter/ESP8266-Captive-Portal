@@ -52,6 +52,7 @@ void serialCommand(){
 }
 
 void deauth(const int channel, String BSSIDstr){
+  deauthing = true;
   uint8_t bssid[6];
   sscanf(BSSIDstr.c_str(), "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &bssid[0], &bssid[1], &bssid[2], &bssid[3], &bssid[4], &bssid[5]);
 
