@@ -99,15 +99,12 @@ void setup() {
   WiFi.mode(WIFI_STA);
   pinMode(D4, OUTPUT);
   digitalWrite(D4, HIGH);
-  pinMode(D5, OUTPUT);
+  pinMode(D3, OUTPUT);
 }
 
 void loop() {
   serialCommand();
 
-  if(WiFi.status() == 3 && digitalRead(D5) == LOW) {
-    digitalWrite(D5, HIGH);
-  } else if(WiFi.status() != 3 && digitalRead(D5) == HIGH){
-    digitalWrite(D5, LOW);
-  }
+  if(WiFi.status() == 3 && digitalRead(D3) == LOW) { digitalWrite(D3, HIGH); }
+  else if(WiFi.status() != 3 && digitalRead(D3) == HIGH){ digitalWrite(D3, LOW); }
 }
