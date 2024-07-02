@@ -27,7 +27,6 @@ String targetSSID; //ssid of the target network
 String indexLang = "EN"; //Index Page Language(You can change the Default Language Here)
 bool validate = true; //contains if the password should be validated
 int slaveStatus = 8;
-bool deauthing = false;
 
 DNSServer dnsServer; ESP8266WebServer webServer(80);
 SoftwareSerial esp(D1, D2);
@@ -37,6 +36,9 @@ void redirect(String location){ webServer.sendHeader("Location", location, true)
 void handleDashboard() { //handles the dashboard page
   int networks = WiFi.scanNetworks(false); int scanstart = millis();
   while (networks <= 1 && millis() - scanstart < 5000){ delay(125); } //ensures that the website only loads if the scan is succesfull or it times out
+  
+  bool deauthing = false; if(digitalRead(D5) == 0){ deauthing = true; }
+  
   webServer.send(200, "text/html", dashboard(indexLang, favicon(), targetSSID, allPass, networks, validate, deauthing));
 
   if (webServer.hasArg("led_off")){ digitalWrite(LED_BUILTIN, HIGH); redirect("/dashboard"); } //calls the led off function if the button on the dashboard is pressed
@@ -148,7 +150,6 @@ void handleDeauth(){ //gets the target and duration for the deauth attack and se
   Serial.printf("Starting to Deauth: %s(%s), on channel: %i\n", WiFi.SSID(target).c_str(), WiFi.BSSIDstr(target).c_str(), WiFi.channel(target));
   
   esp.printf("deauth|%i|%s", WiFi.channel(target), WiFi.BSSIDstr(target).c_str());
-  deauthing = true;
 
   redirect("/dashboard");
   Serial.printf("=====Deauther=====\n\n");
@@ -159,7 +160,6 @@ void stopDeauth(){
 
   esp.printf("stopDeauthing"); 
   redirect("/dashboard");
-  deauthing = false;
 
   Serial.printf("Done Deauthing\n");
   Serial.printf("=====Deauther=====\n\n");
@@ -229,6 +229,7 @@ void setup(){
   //Enable the built-in LED
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
+  pinMode(D5, INPUT);
 
   Serial.printf("=====Setup=====\n\n");
 }
