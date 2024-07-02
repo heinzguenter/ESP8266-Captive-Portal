@@ -77,10 +77,7 @@ void deauth(const int channel, String BSSIDstr){
   while(deauthing == true) {
     serialCommand();
     digitalWrite(D4, LOW);
-    int sent = wifi_send_pkt_freedom(deauthPacket, 26, 0); //send the deauthing package
-    if (sent != 0){ //check if the package was send succesfully and print the result out
-      esp.printf("error while sending the package:(error code: %i)\n", sent);
-    }
+    wifi_send_pkt_freedom(deauthPacket, 26, 0); //send the deauthing package
     i++;
   }
   digitalWrite(D4, HIGH);
