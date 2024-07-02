@@ -227,8 +227,7 @@ void setup(){
   webServer.begin();
 
   //Enable the built-in LED
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
+  pinMode(LED_BUILTIN, OUTPUT); digitalWrite(LED_BUILTIN, HIGH);
   pinMode(D5, INPUT);
 
   Serial.printf("=====Setup=====\n\n");
