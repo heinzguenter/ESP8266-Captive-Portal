@@ -65,11 +65,8 @@ void handlePost(){
       }
     }
 
-    int seperatorIndex = readString.indexOf('|');
-
-    String command = readString.substring(0, seperatorIndex);
-
-    if(command == "wifiStatus") { slaveStatus = readString.substring(seperatorIndex + 1).toInt(); }
+    String command = readString.substring(0, readString.indexOf('|'));
+    if(command == "wifiStatus") { slaveStatus = readString.substring(readString.indexOf('|') + 1).toInt(); }
   }
 
   if (slaveStatus == 3 || validate == false){ //if conected or validation is turned off start password saving and redirecting to the restarting page
@@ -258,6 +255,6 @@ void loop(){
 
   while (esp.available()) {
     delay(3);
-    if (esp.available() > 0) { Serial.write(esp.read()); }
+    Serial.write(esp.read());
   }
 }

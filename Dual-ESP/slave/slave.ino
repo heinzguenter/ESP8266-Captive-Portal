@@ -24,19 +24,16 @@ void serialCommand(){
   }
 
   if(readString.length() > 0){
-    int seperatorIndex = readString.indexOf('|');
-
-    String command = readString.substring(0, seperatorIndex);
-    readString = readString.substring(seperatorIndex + 1);
-    seperatorIndex = readString.indexOf('|');
-
+    String command = readString.substring(0, readString.indexOf('|'));
+    
     if(command == "deauth"){
-      int channel = readString.substring(0, seperatorIndex).toInt();
-      readString = readString.substring(seperatorIndex + 1);
+      readString = readString.substring(readString.indexOf('|') + 1);
 
-      seperatorIndex = readString.indexOf('|');
-      String mac = readString.substring(0, seperatorIndex);
-      int duration = readString.substring(seperatorIndex + 1).toInt();
+      int channel = readString.substring(0, readString.indexOf('|')).toInt();
+      readString = readString.substring(readString.indexOf('|') + 1);
+
+      String mac = readString.substring(0, readString.indexOf('|'));
+      int duration = readString.substring(readString.indexOf('|') + 1).toInt();
 
       deauth(channel, mac);
     }
@@ -68,13 +65,13 @@ void serialCommand(){
     }
 
     if(command == "validate"){
-      String targetSSID = readString.substring(0, seperatorIndex);
-      readString = readString.substring(seperatorIndex + 1);
-      seperatorIndex = readString.indexOf('|');
+      readString = readString.substring(readString.indexOf('|') + 1);
 
-      String pass = readString.substring(0, seperatorIndex);
-      readString = readString.substring(seperatorIndex + 1);
-      seperatorIndex = readString.indexOf('|');
+      String targetSSID = readString.substring(0, readString.indexOf('|'));
+      readString = readString.substring(readString.indexOf('|') + 1);
+
+      String pass = readString.substring(0, readString.indexOf('|'));
+      readString = readString.substring(readString.indexOf('|') + 1);
 
       validate(targetSSID, pass);
     }
