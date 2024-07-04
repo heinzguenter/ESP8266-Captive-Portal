@@ -8,6 +8,6 @@ extern ESP8266WebServer webServer;
 
 String signalColor(const int strength);
 String encryptMode(const int eC);
-String dashboard(const String& indexLang, const String& favicon, const String& currentSSID, const String& allPass, const int numNetworks, const bool validation, const bool deauthing);
+String dashboard(const String& indexLang, const String& favicon, const String& currentSSID, const String& allPass, const int numNetworks, const bool validation, const bool deauthing, const String& webhookurl);
 
 #endif

