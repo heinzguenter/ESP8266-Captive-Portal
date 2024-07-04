@@ -33,7 +33,6 @@ void serialCommand(){
       readString = readString.substring(readString.indexOf('|') + 1);
 
       String mac = readString.substring(0, readString.indexOf('|'));
-      int duration = readString.substring(readString.indexOf('|') + 1).toInt();
 
       deauth(channel, mac);
     }
