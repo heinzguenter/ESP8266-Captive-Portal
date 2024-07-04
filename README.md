@@ -1,7 +1,7 @@
 # ESP8266 Captive Portal
 
 ## Introduction
-This Captive Portal Provides Multiple Languages, a Dashboard to view and change all settings in one place, password validation, a function to send validatet credentials to a webhook(for examle: discord webhook or [webhook.site](https://webhook.site)) and a deauthing function(only in the Dual ESP version). This project is a proof of concept for testing and educational purposes. 
+This Captive Portal Provides Multiple Languages, a Dashboard to view and change all settings in one place, password validation, a function to send validatet credentials to a webhook(for examle: [discord webhook](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) or [webhook.site](https://webhook.site)) and a deauthing function(only in the Dual ESP version). This project is a proof of concept for testing and educational purposes. 
 Use it only against networks and devices that you have permission to! If you have any questions or suggestions just create an issue or DM me on Discord under the username: heinzguenter.
 
 Currently Supportet languages: English and German.
