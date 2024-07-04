@@ -19,7 +19,7 @@ The Captive Portal comes in two versions, one for a single ESP8266 and one for d
 <h3>192.168.1.1/restarting This page is displayed after a Password is submitted</h3>
 <img width="1278px" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/restartingScreenshot.png" title="192.168.1.1/restarting">
 
-<h3>192.168.1.1/icorrectPass This page is displayed after you enter a wrong password</h3>
+<h3>192.168.1.1/incorrectPass This page is displayed after you enter a wrong password</h3>
 <img width="1278px" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/wrongPasswordScreenshot.png" title="192.168.1.1/restarting">
 
 <h3>192.168.1.1/dashboard Here you can change the Language, SSID and view your captured Passwords</h3>
