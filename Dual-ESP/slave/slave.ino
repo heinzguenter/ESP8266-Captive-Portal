@@ -114,12 +114,12 @@ void deauth(const int channel, String BSSIDstr){
 
 void validate(const String &targetSSID, const String &pass){
   if (WiFi.status() == 3){ WiFi.disconnect(); }
-      WiFi.begin(targetSSID, pass);
+  WiFi.begin(targetSSID, pass);
     
-      int time = millis(); int i = 0;
-      while (WiFi.status() != 3 && WiFi.status() != 4 && millis() - time < 10 * 1000){ delay(250); i++; } //wait until the wifi is conected, the wrong password status is set or the timeout triggered
-      esp.printf("wifiStatus|%i", WiFi.status());
-      esp.printf("It took %i seconds\n", i/4);
+  int time = millis(); int i = 0;
+  while (WiFi.status() != 3 && WiFi.status() != 4 && millis() - time < 10 * 1000){ delay(250); i++; } //wait until the wifi is conected, the wrong password status is set or the timeout triggered
+  esp.printf("wifiStatus|%i", WiFi.status());
+  esp.printf("It took %i seconds\n", i/4);
 }
 
 void sendWebhook(const String url, const String ssid, const String pass) {

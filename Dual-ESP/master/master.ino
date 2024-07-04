@@ -1,7 +1,7 @@
-//////////////////////////////////////////////////
-//           Made By HEINZGUENTER               //
-//github.com/heinzguenter/ESP8266-Captive-Portal//
-//////////////////////////////////////////////////
+////////////////////////////////////////////////////
+//              Made By HEINZGUENTER              //
+// github.com/heinzguenter/ESP8266-Captive-Portal //
+////////////////////////////////////////////////////
 
 #include <ESP8266WiFi.h>
 #include <DNSServer.h>
@@ -54,7 +54,6 @@ void handlePost(){
     Serial.printf("Connnecting to: %s, %s\n", targetSSID.c_str(), pass.c_str());
     String readString;
 
-    
     while(!esp.available()){ delay(250); }
 
     while (esp.available()) {
