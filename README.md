@@ -17,13 +17,13 @@ The Captive Portal comes in two versions, one for a single ESP8266 and one for d
 <img width="1278px" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/index-screenshot.png" title="192.168.1.1/">
 
 <h3>192.168.1.1/restarting This page is displayed after a Password is submitted</h3>
-<img width="1278px" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/restarting-screenshot.png" title="192.168.1.1/restarting">
+<img width="1278px" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/restartingScreenshot.png" title="192.168.1.1/restarting">
 
 <h3>192.168.1.1/dashboard Here you can change the Language, SSID and view your captured Passwords</h3>
-<img width="1261" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/dashboard-screenshot.png" title="192.168.1.1/dashboard">
+<img width="1261" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/dashboardScreenshot.png" title="192.168.1.1/dashboard">
 
 <h3>Logs of every action are printed on the serial connection</h3>
-<img width="410" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/Serial-Interface-screenshot.png" title="SerialLog">
+<img width="410" src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/serialInterfaceScreenshot.png" title="SerialLog">
 
 ## Usage
 1. Download and add Spacehuhn's custom board to your IDE(you can follow [this guide](https://deauther.com/docs/diy/installation-arduino/))
