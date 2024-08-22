@@ -43,26 +43,15 @@ void serialCommand(){
 
     if(command == "webhook"){
       String url; String ssid; String pass;
-      while (!esp.available()) { delay(1); }
-      while (esp.available()) {
-        delay(3);
-        char c = esp.read();
-        url += c;
-      }
 
       while (!esp.available()) { delay(1); }
-      while (esp.available()) {
-        delay(3);
-        char c = esp.read();
-        ssid += c;
-      }
+      while (esp.available()) { delay(3); char c = esp.read(); url += c; }
 
       while (!esp.available()) { delay(1); }
-      while (esp.available()) {
-        delay(3);
-        char c = esp.read();
-        pass += c;
-      }
+      while (esp.available()) { delay(3); char c = esp.read(); ssid += c; }
+
+      while (!esp.available()) { delay(1); }
+      while (esp.available()) { delay(3); char c = esp.read(); pass += c; }
 
       sendWebhook(url, ssid, pass);
     }
