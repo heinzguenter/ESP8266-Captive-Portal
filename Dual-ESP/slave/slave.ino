@@ -12,6 +12,13 @@ SoftwareSerial esp(D1, D2);
 String readString;
 bool deauthing = true;
 
+String splitReadString() {
+  String rtn = readString.substring(0, readString.indexOf('|'));
+  readString = readString.substring(readString.indexOf('|') + 1);
+
+  return rtn;
+}
+
 void serialCommand(){
   readString = "";
 
@@ -24,15 +31,12 @@ void serialCommand(){
   }
 
   if(readString.length() > 0){
-    String command = readString.substring(0, readString.indexOf('|'));
+    String command = splitReadString();
     
     if(command == "deauth"){
-      readString = readString.substring(readString.indexOf('|') + 1);
+      int channel = splitReadString().toInt();
 
-      int channel = readString.substring(0, readString.indexOf('|')).toInt();
-      readString = readString.substring(readString.indexOf('|') + 1);
-
-      String mac = readString.substring(0, readString.indexOf('|'));
+      String mac = splitReadString();
 
       deauth(channel, mac);
     }
@@ -64,13 +68,9 @@ void serialCommand(){
     }
 
     if(command == "validate"){
-      readString = readString.substring(readString.indexOf('|') + 1);
+      String targetSSID = splitReadString();
 
-      String targetSSID = readString.substring(0, readString.indexOf('|'));
-      readString = readString.substring(readString.indexOf('|') + 1);
-
-      String pass = readString.substring(0, readString.indexOf('|'));
-      readString = readString.substring(readString.indexOf('|') + 1);
+      String pass = splitReadString();
 
       validate(targetSSID, pass);
     }
