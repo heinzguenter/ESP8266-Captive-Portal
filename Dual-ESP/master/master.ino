@@ -185,7 +185,7 @@ void setup(){
     passEnd++; //Updating the end location of password in EEPROM.
   }
   
-  Serial.printf("WiFi mode setup: %s\n", WiFi.mode(WIFI_AP) ? "Sucessfully!" : "Failed!");
+  Serial.printf("\n\nWiFi mode setup: %s\n", WiFi.mode(WIFI_AP) ? "Sucessfully!" : "Failed!");
   Serial.printf("Soft ap config: %s\n", WiFi.softAPConfig(APIP, APIP, IPAddress(255, 255, 255, 0)) ? "Sucessfully!" : "Failed!");
 
   currentSSID = ESSID.length() > 1 ? ESSID.c_str() : DefaultSSID; //Setting currentSSID -> SSID in EEPROM or default one.
