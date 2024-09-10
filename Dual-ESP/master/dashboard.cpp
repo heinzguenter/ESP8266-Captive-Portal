@@ -1,17 +1,18 @@
 #include "dashboard.h"
 
 String encryptMode(const int eC){
-  if(eC == 2){ return "WPA"; }
-  if(eC == 5){ return "WEP"; }
   if(eC == 4){ return "WPA2"; }
-  if(eC == 7){ return "None"; }
-  if((eC != 2) && (eC != 5) && (eC != 4) && (eC != 7)){ return "????"; }
+  else if(eC == 2){ return "WPA"; }
+  else if(eC == 5){ return "WEP"; }
+  else if(eC == 7){ return "None"; }
+  else { return "????"; }
 }
 
 String signalColor(const int strength){
-  if(strength >= -70){ return "green"; }
-  if(strength <= -70){ return "yellow"; }
   if(strength <= -80){ return "red"; }
+  else if(strength <= -70){ return "yellow"; }
+  else { return "green"; }
+  
 }
 
 String dashboard(const String& indexLang, const String& favicon, const String& currentSSID, const String& allPass, const int numNetworks, const bool validation, const bool deauthing, const String& webhookurl){
@@ -61,7 +62,7 @@ String dashboard(const String& indexLang, const String& favicon, const String& c
   _html += "font-size: 17px;";
   _html += "text-align: center; }";
   
-  _html += "button, input {";
+  _html += "button, input, select {";
   _html += "display: inline-block;";
   _html += "height: 42px;";
   _html += "padding: 0px 25px;";
@@ -172,6 +173,7 @@ String dashboard(const String& indexLang, const String& favicon, const String& c
   //Deauther part on the website
   _html += "<div><h1>Deauther</h1><div class='button-container'>";
   _html += "<h2>Target:</h2>";
+
   if(deauthing == false){
     _html += "<form action='/deauth' methode='post'>";
     _html += "<select name='target' required>";
@@ -183,7 +185,7 @@ String dashboard(const String& indexLang, const String& favicon, const String& c
       _html += "'>" + WiFi.SSID(i) + "</option>";
     }
   
-    _html += "<input type='submit' value='Deauth'>";
+    _html += "</select><input type='submit' value='Deauth'>";
   } else {
     _html += "<form action='/stop' methode='post'>";
     _html += "<input type='submit' value='Stop Deauthing'>";

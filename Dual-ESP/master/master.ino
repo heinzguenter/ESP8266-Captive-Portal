@@ -186,8 +186,7 @@ void startEEPROM(){
     EEPROM.commit();
   }
 
-  String ESSID;
-  int i = 4;
+  String ESSID; int i = 4;
   while (EEPROM.read(i) != '\0') { ESSID += char(EEPROM.read(i)); i++; } //Read EEPROM SSID
 
   currentSSID = ESSID.length() > 1 ? ESSID.c_str() : DefaultSSID; //Setting currentSSID -> SSID in EEPROM or default one.
@@ -231,8 +230,7 @@ void setup(){
   webServer.on("/validate", setValidate);
   webServer.on("/webhook", setWebhookUrl);
   
-  
-  webServer.onNotFound([](){  webServer.send(200, "text/html", Index(indexLang, favicon, targetSSID)); });
+  webServer.onNotFound([](){ webServer.send(200, "text/html", Index(indexLang, favicon, targetSSID)); });
   webServer.begin();
 
   //Enable the built-in LED
