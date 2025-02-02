@@ -1,5 +1,4 @@
-# ESP8266 Captive Portal version 2.3
-
+# ESP8266 Captive Portal(v3.0)
 ## Introduction
 This captive portal provides multiple languages, a dashboard to view and change all settings, password validation, a function to send validatet credentials to a webhook(for example: [discord webhook](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) or [webhook.site](https://webhook.site)) and a deauthing function(only in the Dual ESP version). This project is a proof of concept for testing and educational purposes. 
 Use it only against networks and devices that you have permission to! If you have any questions or suggestions just create an issue or DM me on Discord under the username: heinzguenter.

