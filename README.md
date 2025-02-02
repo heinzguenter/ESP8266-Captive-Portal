@@ -29,5 +29,8 @@ Credits: [Spacehuhn](https://github.com/SpacehuhnTech) for inspiration on the De
 <h3>192.168.1.1/dashboard Here you can change the Language, SSID and view your captured Passwords</h3>
 <img src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/dashboardScreenshot.png" title="192.168.1.1/dashboard">
 
+<h3>192.168.1.1/settings here you can change your settings</h3>
+<img src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/settingsDashboardScreenshot.png" title="192.168.1.1/dashboard">
+
 <h3>Logs of every action are printed on the serial connection</h3>
 <img src="https://raw.githubusercontent.com/heinzguenter/ESP8266-Captive-Portal/main/src/serialInterfaceScreenshot.png" title="SerialLog">
